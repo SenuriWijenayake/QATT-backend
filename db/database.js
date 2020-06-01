@@ -72,15 +72,17 @@ exports.updateAnswerWithSeed = function(answer,seed) {
 exports.saveUser = function(user) {
   return new Promise(function(resolve, reject) {
     var newUser = new User({
+      name: user.name,
+      email: user.email,
+      password: user.password,
       gender: user.gender,
       genderSpecified: user.genderSpecified,
       age: user.age,
       education: user.education,
       field: user.field,
-      discussion: user.discussion == 'Yes' ? true : false,
-      cues: user.cues,
-      visibility: user.visibility == 'Yes' ? true : false,
-      qOrder : user.qOrder
+      structure: user.structure,
+      socialPresence: user.socialPresence,
+      profilePicture : user.profilePicture
     });
 
     newUser.save(function(err, newUser) {

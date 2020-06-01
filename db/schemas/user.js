@@ -4,15 +4,17 @@ var Schema = mongoose.Schema;
 // create a schema
 var userSchema = new Schema({
   id: String,
+  name: {type : String, required: false},
+  email: String,
+  password: String,
   gender: String,
   age: Number,
   education: String,
   field : String,
-  discussion : Boolean,
-  cues: String,
-  visibility: Boolean,
+  structure : Boolean,
+  socialPresence : Boolean,
   genderSpecified : {type : String, required: false},
-  qOrder : {type : Array}
+  profilePicture : {type : String, required: false}
 });
 
 var Result = mongoose.model('User', userSchema);
