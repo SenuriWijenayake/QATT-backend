@@ -1,7 +1,7 @@
 //Import the mongoose module
 var mongoose = require('mongoose');
-var mongoDB = 'mongodb://admin:admin1234@ds145356.mlab.com:45356/socialpresence';
-// var mongoDB = 'mongodb://admin:admin1234@ds259596.mlab.com:59596/sptest';
+// var mongoDB = 'mongodb://admin:admin1234@ds145356.mlab.com:45356/socialpresence';
+var mongoDB = 'mongodb://localhost:27017/study5';
 
 mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
@@ -14,25 +14,6 @@ var Answer = require('./schemas/answer');
 var BigFiveRaw = require('./schemas/bigFiveRaw');
 var Chat = require('./schemas/chat');
 var bigFiveQuestions = require('./bigFiveQuestions');
-
-
-//Function to save the chat of the user
-exports.saveRawChat = function(userId, chat) {
-  return new Promise(function(resolve, reject) {
-
-    console.log("Inside the database function");
-    var myChat = new Chat({
-      userId: userId,
-      chat: chat
-    });
-
-    myChat.save(function(err) {
-      if (err) throw err;
-      resolve('Chat messages for' + userId.toString() + 'were saved successfully');
-    });
-  });
-
-};
 
 //Function to save the saw big five results to the database
 exports.saveBigFiveRaw = function(userId, results) {
