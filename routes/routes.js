@@ -1,11 +1,14 @@
 var logic = require('../code');
 var utils = require('../utils');
+var multer = require('multer');
+var upload = multer({dest: "./uploads"});
 
 var appRouter = function(app) {
 
   //Endpoint to save user profile data
-  app.post('/user', function(req, res) {
+  app.post('/user', upload.single('profilePicture'), function(req, res) {
     console.log("Request received at user data");
+    console.log(req.file);
     console.log(req.body);
     return new Promise(function(resolve, reject) {
       logic.saveUserData(req.body).then(function(obj) {
