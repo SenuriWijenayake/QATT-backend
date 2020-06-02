@@ -39,32 +39,31 @@ exports.getFeedback = function(userAnswer) {
   //Add their answers as well
   var count = shuffle([2, 3, 4, 5]);
   var quotesPosition = shuffle([1, 2, 3, 4]);
-  var userProfiles = [
-  {
-    "lAvatar": "a.png",
-    "aAvatar": "neutral.png",
-    "lUsername": "JG",
-    "aUsername": "User 1"
-  },
-  {
-    "lAvatar": "b.png",
-    "aAvatar": "neutral.png",
-    "lUsername": "NB",
-    "aUsername": "User 2"
-  },
-  {
-    "lAvatar": "d.png",
-    "aAvatar": "neutral.png",
-    "lUsername": "DH",
-    "aUsername": "User 4"
-  },
-  {
-    "lAvatar": "e.png",
-    "aAvatar": "neutral.png",
-    "lUsername": "BS",
-    "aUsername": "User 5"
-  }
-];
+  var userProfiles = [{
+      "lAvatar": "a.png",
+      "aAvatar": "neutral.png",
+      "lUsername": "JG",
+      "aUsername": "User 1"
+    },
+    {
+      "lAvatar": "b.png",
+      "aAvatar": "neutral.png",
+      "lUsername": "NB",
+      "aUsername": "User 2"
+    },
+    {
+      "lAvatar": "d.png",
+      "aAvatar": "neutral.png",
+      "lUsername": "DH",
+      "aUsername": "User 4"
+    },
+    {
+      "lAvatar": "e.png",
+      "aAvatar": "neutral.png",
+      "lUsername": "BS",
+      "aUsername": "User 5"
+    }
+  ];
   console.log(count, quotesPosition);
 
   //Others are in the same answer as me
@@ -74,10 +73,10 @@ exports.getFeedback = function(userAnswer) {
       var obj = {
         "avatar": (userAnswer.cues == 'letter') ? profileSelected.lAvatar : profileSelected.aAvatar,
         "answer": selected.answer,
-        "username" : (userAnswer.cues == 'letter') ? profileSelected.lUsername : profileSelected.aUsername,
+        "username": (userAnswer.cues == 'letter') ? profileSelected.lUsername : profileSelected.aUsername,
         "order": count[i],
         "isInMajority": question.isMajority,
-        "quote" : utils.getQuote (question, selected.id, quotesPosition[i])
+        "quote": utils.getQuote(question, selected.id, quotesPosition[i])
       };
 
       final.push(obj);
@@ -92,10 +91,10 @@ exports.getFeedback = function(userAnswer) {
       var obj = {
         "avatar": (userAnswer.cues == 'letter') ? profileSelected.lAvatar : profileSelected.aAvatar,
         "answer": nextAnswer.answer,
-        "username" : (userAnswer.cues == 'letter') ? profileSelected.lUsername : profileSelected.aUsername,
+        "username": (userAnswer.cues == 'letter') ? profileSelected.lUsername : profileSelected.aUsername,
         "order": count[4 - (i + 1)],
         "isInMajority": !question.isMajority,
-        "quote" : utils.getQuote (question, nextAnswer.id, quotesPosition[4 - (i + 1)])
+        "quote": utils.getQuote(question, nextAnswer.id, quotesPosition[4 - (i + 1)])
       };
       final.push(obj);
     }
@@ -111,7 +110,7 @@ exports.getFeedback = function(userAnswer) {
 
 
 //Function to get feedback with no changes
-exports.getNoChangeFeedback = function(userAnswer, feedback){
+exports.getNoChangeFeedback = function(userAnswer, feedback) {
   var data = [];
   var question = utils.getQuestionByNumber(userAnswer.questionId);
   var allAnswers = question.answers;
@@ -138,7 +137,7 @@ exports.getNoChangeFeedback = function(userAnswer, feedback){
       var obj = {
         "avatar": feedback[i].avatar,
         "answer": feedback[i].answer,
-        "username" : feedback[i].username,
+        "username": feedback[i].username,
         "newAnswer": feedback[i].answer,
         "order": feedback[i].order,
         "hasChanged": false
@@ -147,7 +146,7 @@ exports.getNoChangeFeedback = function(userAnswer, feedback){
     }
   }
 
-  return(data);
+  return (data);
 
 };
 
@@ -191,7 +190,7 @@ exports.getUpdatedFeedback = function(userAnswer, feedback) {
           "avatar": feedback[i].avatar,
           "answer": feedback[i].answer,
           "newAnswer": feedback[i].answer,
-          "username" : feedback[i].username,
+          "username": feedback[i].username,
           "order": feedback[i].order,
           "hasChanged": false
         };
@@ -213,7 +212,7 @@ exports.getUpdatedFeedback = function(userAnswer, feedback) {
           "avatar": othersInMin[i].avatar,
           "answer": othersInMin[i].answer,
           "newAnswer": othersInMin[i].answer,
-          "username" : othersInMin[i].username,
+          "username": othersInMin[i].username,
           "order": othersInMin[i].order,
           "hasChanged": false
         };
@@ -223,7 +222,7 @@ exports.getUpdatedFeedback = function(userAnswer, feedback) {
         var obj = {
           "avatar": othersInMin[i].avatar,
           "answer": othersInMin[i].answer,
-          "username" : othersInMin[i].username,
+          "username": othersInMin[i].username,
           "newAnswer": majorityAnswer,
           "order": othersInMin[i].order,
           "hasChanged": true
@@ -322,11 +321,15 @@ exports.saveUserData = function(user) {
   });
 };
 
-//Function to save the user chat
-exports.saveUserChat = function(userId, chats) {
+//Function to login user
+exports.loginUser = function(user) {
   return new Promise(function(resolve, reject) {
-    db.saveRawChat(userId, chats).then(function(status) {
-      resolve(status);
+    db.loginUser(user).then(function(userId) {
+      resolve({
+        "id": userId
+      });
+    }).catch(function(error) {
+      reject(error);
     });
   });
 };

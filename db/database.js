@@ -46,9 +46,9 @@ exports.saveBigFiveResults = function(userId, results) {
 };
 
 //Function to update an answer with seed
-exports.updateAnswerWithSeed = function(answer,seed) {
+exports.updateAnswerWithSeed = function(answer, seed) {
   var bool = true;
-  if (seed == 2){
+  if (seed == 2) {
     bool = false
   }
   var query = {
@@ -82,12 +82,30 @@ exports.saveUser = function(user) {
       field: user.field,
       structure: user.structure,
       socialPresence: user.socialPresence,
-      profilePicture : user.profilePicture
+      profilePicture: user.profilePicture
     });
 
     newUser.save(function(err, newUser) {
       if (err) reject(err);
       resolve(newUser._id.toString());
+    });
+  });
+};
+
+//Function to login user
+exports.loginUser = function(user) {
+  console.log(user);
+  var query = {
+    email: user.email,
+    password: user.password
+  };
+  return new Promise(function(resolve, reject) {
+    User.findOne(query, function(err, user) {
+      if (user != null){
+        resolve(user._id.toString());
+      } else {
+        reject({"error" : "Invalid credentials. Please try again."});
+      }
     });
   });
 };
@@ -145,7 +163,7 @@ exports.updateAnswerWithFeedback = function(answer, isUpdate) {
   };
   var newData;
 
-  if (!isUpdate){
+  if (!isUpdate) {
     newData = {
       feedback: answer.feedback
     };
@@ -173,18 +191,18 @@ exports.updateAnswerEvents = function(answer) {
     questionId: answer.questionId
   };
   var newData = {
-    sawQuestion : answer.sawQuestion,
-    selectedOption : answer.selectedOption,
-    selectedConf : answer.selectedConf,
-    clickedSubmit : answer.clickedSubmit,
-    sawFeedback : answer.sawFeedback,
-    selectedYes : answer.selectedYes ? answer.selectedYes : null,
-    selectedNext : answer.selectedNext ? answer.selectedNext : null,
-    selectedNo : answer.selectedNo ? answer.selectedNo : null,
-    selectedUpdatedOption : answer.selectedUpdatedOption ? answer.selectedUpdatedOption : null,
-    selectedUpdatedConf : answer.selectedUpdatedConf ? answer.selectedUpdatedConf : null,
-    submittedUpdatedAnswer : answer.submittedUpdatedAnswer ? answer.submittedUpdatedAnswer : null,
-    sawUpdatedFeedback : answer.sawUpdatedFeedback ? answer.sawUpdatedFeedback : null
+    sawQuestion: answer.sawQuestion,
+    selectedOption: answer.selectedOption,
+    selectedConf: answer.selectedConf,
+    clickedSubmit: answer.clickedSubmit,
+    sawFeedback: answer.sawFeedback,
+    selectedYes: answer.selectedYes ? answer.selectedYes : null,
+    selectedNext: answer.selectedNext ? answer.selectedNext : null,
+    selectedNo: answer.selectedNo ? answer.selectedNo : null,
+    selectedUpdatedOption: answer.selectedUpdatedOption ? answer.selectedUpdatedOption : null,
+    selectedUpdatedConf: answer.selectedUpdatedConf ? answer.selectedUpdatedConf : null,
+    submittedUpdatedAnswer: answer.submittedUpdatedAnswer ? answer.submittedUpdatedAnswer : null,
+    sawUpdatedFeedback: answer.sawUpdatedFeedback ? answer.sawUpdatedFeedback : null
   };
 
   return new Promise(function(resolve, reject) {

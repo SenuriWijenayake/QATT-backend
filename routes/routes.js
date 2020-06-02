@@ -17,6 +17,21 @@ var appRouter = function(app) {
     });
   });
 
+  //Endpoint to login
+  app.post('/login', function(req, res, next) {
+    console.log("Request received at user login");
+    return new Promise(function(resolve, reject) {
+      logic.loginUser(req.body).then(function(obj) {
+          resolve(res.status(200).send({
+            "id": obj.id
+          }))
+        })
+        .catch(function(error) {
+          resolve(res.status(400).send(error.error));
+          next(error);
+        });
+    });
+  });
 
   app.post('/feedback', function(req, res) {
 
