@@ -94,7 +94,6 @@ exports.saveUser = function(user) {
 
 //Function to login user
 exports.loginUser = function(user) {
-  console.log(user);
   var query = {
     email: user.email,
     password: user.password
@@ -102,7 +101,7 @@ exports.loginUser = function(user) {
   return new Promise(function(resolve, reject) {
     User.findOne(query, function(err, user) {
       if (user != null){
-        resolve(user._id.toString());
+        resolve({"userId" : user._id.toString(), "socialPresence" : user.socialPresence, "structure" : user.structure});
       } else {
         reject({"error" : "Invalid credentials. Please try again."});
       }

@@ -324,10 +324,8 @@ exports.saveUserData = function(user) {
 //Function to login user
 exports.loginUser = function(user) {
   return new Promise(function(resolve, reject) {
-    db.loginUser(user).then(function(userId) {
-      resolve({
-        "id": userId
-      });
+    db.loginUser(user).then(function(user) {
+      resolve(user);
     }).catch(function(error) {
       reject(error);
     });

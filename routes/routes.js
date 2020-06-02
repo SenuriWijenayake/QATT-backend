@@ -22,9 +22,7 @@ var appRouter = function(app) {
     console.log("Request received at user login");
     return new Promise(function(resolve, reject) {
       logic.loginUser(req.body).then(function(obj) {
-          resolve(res.status(200).send({
-            "id": obj.id
-          }))
+          resolve(res.status(200).send(obj));
         })
         .catch(function(error) {
           resolve(res.status(400).send(error.error));
