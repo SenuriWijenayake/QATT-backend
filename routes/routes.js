@@ -8,14 +8,16 @@ var appRouter = function(app) {
   //Endpoint to save user profile data
   app.post('/user', upload.single('profilePicture'), function(req, res) {
     console.log("Request received at user data");
-    console.log(req.file);
-    console.log(req.body);
+    req.body.profilePicture = req.file.filename;
     return new Promise(function(resolve, reject) {
       logic.saveUserData(req.body).then(function(obj) {
-        resolve(res.status(200).send({
-          "id": obj.id,
-          "order": obj.qOrder
-        }));
+        if (obj == -1) {
+          res.status(401).send("An account under this email already exists.");
+        } else {
+          resolve(res.status(200).send({
+            "id": obj.id
+          }));
+        }
       });
     });
   });

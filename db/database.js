@@ -68,6 +68,18 @@ exports.updateAnswerWithSeed = function(answer, seed) {
 
 };
 
+//Function to get user by email
+exports.getUserByEmail = function (email){
+  var query = {
+    email: email
+  };
+  return new Promise(function(resolve, reject) {
+    User.findOne(query, function(err, user) {
+      resolve(user);
+    });
+  });
+};
+
 //Function to save user details
 exports.saveUser = function(user) {
   return new Promise(function(resolve, reject) {

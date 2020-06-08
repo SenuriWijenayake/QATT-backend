@@ -313,10 +313,17 @@ exports.getBigFiveQuestions = function() {
 //Function to save user data
 exports.saveUserData = function(user) {
   return new Promise(function(resolve, reject) {
-    db.saveUser(user).then(function(userId) {
-      resolve({
-        "id": userId
-      });
+    // Check if the email exists already
+    db.getUserByEmail(user.email).then(function(result){
+      if (result){
+        resolve(-1);
+      } else {
+        db.saveUser(user).then(function(userId) {
+          resolve({
+            "id": userId
+          });
+        });
+      }
     });
   });
 };
