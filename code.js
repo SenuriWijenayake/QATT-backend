@@ -114,6 +114,15 @@ exports.loginUser = function(user) {
   });
 };
 
+//Function to get users in a given group
+exports.getGroupUsers = function(query) {
+  return new Promise(function(resolve, reject) {
+    db.getGroupUsers(query).then(function(users) {
+      resolve(users);
+    });
+  });
+};
+
 //Function to save an answer
 exports.saveAnswer = function(ans) {
 

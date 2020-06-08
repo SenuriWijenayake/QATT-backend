@@ -101,6 +101,19 @@ exports.loginUser = function(user) {
   });
 };
 
+//Function to find users in a given group
+exports.getGroupUsers = function(data) {
+  var query = {
+    socialPresence: data.socialPresence,
+    structure: data.structure
+  };
+  return new Promise(function(resolve, reject) {
+    User.find(query, 'userId name gender age profilePicture', function(err, result) {
+      resolve(result);
+    });
+  });
+};
+
 //Function to save an answer
 exports.saveAnswer = function(answer) {
   return new Promise(function(resolve, reject) {
