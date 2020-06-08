@@ -45,29 +45,6 @@ exports.saveBigFiveResults = function(userId, results) {
   });
 };
 
-//Function to update an answer with seed
-exports.updateAnswerWithSeed = function(answer, seed) {
-  var bool = true;
-  if (seed == 2) {
-    bool = false
-  }
-  var query = {
-    userId: answer.userId,
-    questionId: answer.questionId
-  };
-  var newData = {
-    femaleFirst: bool
-  };
-
-  Answer.findOneAndUpdate(query, newData, {
-    upsert: true
-  }, function(err, doc) {
-    if (err) reject(err);
-    console.log("Seed saved");
-  });
-
-};
-
 //Function to get user by email
 exports.getUserByEmail = function (email){
   var query = {
@@ -155,68 +132,6 @@ exports.updateAnswer = function(answer) {
     newConfidence: answer.newConfidence,
     newExplanation: answer.newExplanation,
     editTime: Date.now()
-  };
-
-  return new Promise(function(resolve, reject) {
-    Answer.findOneAndUpdate(query, newData, {
-      upsert: true
-    }, function(err, newAnswer) {
-      if (err) reject(err);
-      resolve(newAnswer._id.toString());
-    });
-  });
-};
-
-
-//Function to update an answer with any feedback
-exports.updateAnswerWithFeedback = function(answer, isUpdate) {
-
-  var query = {
-    userId: answer.userId,
-    questionId: answer.questionId
-  };
-  var newData;
-
-  if (!isUpdate) {
-    newData = {
-      feedback: answer.feedback
-    };
-  } else {
-    newData = {
-      updatedFeedback: answer.feedback
-    };
-  }
-
-  return new Promise(function(resolve, reject) {
-    Answer.findOneAndUpdate(query, newData, {
-      upsert: true
-    }, function(err, newAnswer) {
-      if (err) reject(err);
-      resolve(newAnswer._id.toString());
-    });
-  });
-};
-
-//Function to update an answer events
-exports.updateAnswerEvents = function(answer) {
-
-  var query = {
-    userId: answer.userId,
-    questionId: answer.questionId
-  };
-  var newData = {
-    sawQuestion: answer.sawQuestion,
-    selectedOption: answer.selectedOption,
-    selectedConf: answer.selectedConf,
-    clickedSubmit: answer.clickedSubmit,
-    sawFeedback: answer.sawFeedback,
-    selectedYes: answer.selectedYes ? answer.selectedYes : null,
-    selectedNext: answer.selectedNext ? answer.selectedNext : null,
-    selectedNo: answer.selectedNo ? answer.selectedNo : null,
-    selectedUpdatedOption: answer.selectedUpdatedOption ? answer.selectedUpdatedOption : null,
-    selectedUpdatedConf: answer.selectedUpdatedConf ? answer.selectedUpdatedConf : null,
-    submittedUpdatedAnswer: answer.submittedUpdatedAnswer ? answer.submittedUpdatedAnswer : null,
-    sawUpdatedFeedback: answer.sawUpdatedFeedback ? answer.sawUpdatedFeedback : null
   };
 
   return new Promise(function(resolve, reject) {
