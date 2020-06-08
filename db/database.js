@@ -99,23 +99,26 @@ exports.saveUser = function(user) {
 
     newUser.save(function(err, newUser) {
       if (err) reject(err);
-      resolve(newUser._id.toString());
+      resolve(newUser);
     });
   });
 };
 
 //Function to login user
 exports.loginUser = function(user) {
+  var password = user.password;
   var query = {
-    email: user.email,
-    password: user.password
+    email: user.email
   };
   return new Promise(function(resolve, reject) {
-    User.findOne(query, function(err, user) {
-      if (user != null){
-        resolve({"userId" : user._id.toString(), "socialPresence" : user.socialPresence, "structure" : user.structure});
-      } else {
-        reject({"error" : "Invalid credentials. Please try again."});
+    User.findOne(query, function(err, result) {
+      if (result == null){
+        resolve (-1);
+      } else if (result.password == password){
+        resolve(result);
+      }
+      else{
+        resolve (-2);
       }
     });
   });

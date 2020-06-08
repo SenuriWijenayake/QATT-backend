@@ -314,14 +314,21 @@ exports.getBigFiveQuestions = function() {
 exports.saveUserData = function(user) {
   return new Promise(function(resolve, reject) {
     // Check if the email exists already
-    db.getUserByEmail(user.email).then(function(result){
-      if (result){
+    db.getUserByEmail(user.email).then(function(result) {
+      if (result) {
         resolve(-1);
       } else {
-        db.saveUser(user).then(function(userId) {
-          resolve({
-            "id": userId
-          });
+        db.saveUser(user).then(function(user) {
+          var obj = {
+            "userId" : user._id.toString(),
+            "name" : user.name,
+            "email" : user.email,
+            "profilePicture" : user.profilePicture,
+            "gender" : user.gender,
+            "structure" : user.structure,
+            "socialPresence" : user.socialPresence
+          };
+          resolve (obj);
         });
       }
     });
@@ -331,10 +338,8 @@ exports.saveUserData = function(user) {
 //Function to login user
 exports.loginUser = function(user) {
   return new Promise(function(resolve, reject) {
-    db.loginUser(user).then(function(user) {
-      resolve(user);
-    }).catch(function(error) {
-      reject(error);
+    db.loginUser(user).then(function(obj) {
+      resolve(obj);
     });
   });
 };

@@ -1,5 +1,6 @@
 var logic = require('../code');
 var utils = require('../utils');
+var fs = require('fs');
 var multer = require('multer');
 var upload = multer({dest: "./uploads"});
 
@@ -7,32 +8,44 @@ var appRouter = function(app) {
 
   //Endpoint to save user profile data
   app.post('/user', upload.single('profilePicture'), function(req, res) {
+
     console.log("Request received at user data");
-    req.body.profilePicture = req.file.filename;
+    var img = fs.readFileSync(req.file.path);
+    req.body.profilePicture = img.toString('base64');
+
     return new Promise(function(resolve, reject) {
       logic.saveUserData(req.body).then(function(obj) {
         if (obj == -1) {
           resolve(res.status(401).send("An account under this email already exists."));
         } else {
-          resolve(res.status(200).send({
-            "id": obj.id
-          }));
+          resolve(res.status(200).send(obj));
         }
       });
     });
   });
 
   //Endpoint to login
-  app.post('/login', function(req, res, next) {
+  app.post('/login', function(req, res) {
     console.log("Request received at user login");
     return new Promise(function(resolve, reject) {
       logic.loginUser(req.body).then(function(obj) {
-          resolve(res.status(200).send(obj));
-        })
-        .catch(function(error) {
-          resolve(res.status(400).send(error.error));
-          next(error);
-        });
+        if (obj == -1){
+          resolve(res.status(401).send("Invalid email address. Please try again."));
+        } else if (obj == -2){
+          resolve(res.status(401).send("Invalid password. Please try again."));
+        } else {
+          var result = {
+            "userId" : obj._id.toString(),
+            "name" : obj.name,
+            "email" : obj.email,
+            "profilePicture" : obj.profilePicture,
+            "gender" : obj.gender,
+            "structure" : obj.structure,
+            "socialPresence" : obj.socialPresence
+          };
+          resolve(res.status(200).send(result));
+        }
+      });
     });
   });
 
