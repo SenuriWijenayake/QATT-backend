@@ -12,7 +12,7 @@ var appRouter = function(app) {
     return new Promise(function(resolve, reject) {
       logic.saveUserData(req.body).then(function(obj) {
         if (obj == -1) {
-          res.status(401).send("An account under this email already exists.");
+          resolve(res.status(401).send("An account under this email already exists."));
         } else {
           resolve(res.status(200).send({
             "id": obj.id
