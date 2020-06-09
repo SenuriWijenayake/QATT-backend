@@ -103,9 +103,11 @@ exports.loginUser = function(user) {
 
 //Function to find users in a given group
 exports.getGroupUsers = function(data) {
+  var thisUser = data.userId;
   var query = {
     socialPresence: data.socialPresence,
-    structure: data.structure
+    structure: data.structure,
+    _id: {$ne : mongoose.Types.ObjectId(thisUser)}
   };
   return new Promise(function(resolve, reject) {
     User.find(query, 'userId name gender age profilePicture', function(err, result) {
