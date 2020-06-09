@@ -101,6 +101,29 @@ exports.loginUser = function(user) {
   });
 };
 
+//Function to update user
+exports.updateUser = function(data) {
+  var query = {
+    _id: mongoose.Types.ObjectId(data.userId)
+  };
+
+  var newData = {
+    firstVisit : data.firstVisit
+  }
+
+  return new Promise(function(resolve, reject) {
+    User.findOneAndUpdate(query, newData, {
+      upsert: false
+    }, function(err, newAnswer) {
+      if (err) reject(err);
+      resolve(newAnswer._id.toString());
+    });
+  });
+
+};
+
+
+
 //Function to find users in a given group
 exports.getGroupUsers = function(data) {
   var thisUser = data.userId;

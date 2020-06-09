@@ -14,7 +14,8 @@ var userSchema = new Schema({
   structure : Boolean,
   socialPresence : Boolean,
   genderSpecified : {type : String, required: false},
-  profilePicture : {type : String, required: false}
+  profilePicture : {type : String, required: false},
+  firstVisit : Boolean
 });
 
 var Result = mongoose.model('User', userSchema);

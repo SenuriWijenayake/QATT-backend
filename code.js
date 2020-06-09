@@ -114,6 +114,16 @@ exports.loginUser = function(user) {
   });
 };
 
+
+//Function to login user
+exports.updateUser = function(user) {
+  return new Promise(function(resolve, reject) {
+    db.updateUser(user).then(function(obj) {
+      resolve(obj);
+    });
+  });
+};
+
 //Function to get users in a given group
 exports.getGroupUsers = function(query) {
   return new Promise(function(resolve, reject) {

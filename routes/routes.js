@@ -51,7 +51,8 @@ var appRouter = function(app) {
             "profilePicture": obj.profilePicture,
             "gender": obj.gender,
             "structure": obj.structure,
-            "socialPresence": obj.socialPresence
+            "socialPresence": obj.socialPresence,
+            "firstVisit" : obj.firstVisit
           };
           resolve(res.status(200).send(result));
         }
@@ -61,10 +62,20 @@ var appRouter = function(app) {
 
   //Endpoint to get users per group
   app.post('/usergroup', function(req, res) {
-    console.log("Request received at GET user group");
+    console.log("Request received at get user group");
     return new Promise(function(resolve, reject) {
       logic.getGroupUsers(req.body).then(function(group) {
         res.status(200).send(group);
+      });
+    });
+  });
+
+  //Endpoint to update user status
+  app.post('/updateuser', function(req, res) {
+    console.log("Request received at update user");
+    return new Promise(function(resolve, reject) {
+      logic.updateUser(req.body).then(function(userId) {
+        res.status(200).send(userId);
       });
     });
   });
