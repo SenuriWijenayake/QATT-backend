@@ -4,32 +4,10 @@ var bigVar = require('./db/bigFiveVariables');
 var db = require('./db/database');
 var shuffle = require('shuffle-array');
 
-exports.shuffleArray = function(array) {
-  for (var i = array.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var temp = array[i];
-    array[i] = array[j];
-    array[j] = temp;
-  }
-};
-
-//Function to create the questions and answers
-exports.getAllQuestions = function(set) {
-
+//Function to create the questions
+exports.getAllQuestions = function() {
   var questions = utils.questions;
-  var response = [];
-
-  for (var i = 0; i < questions.length; i++) {
-    var ques = questions[i];
-
-    var q = {};
-    q.questionId = ques.questionNumber;
-    q.questionText = ques.questionText;
-    q.questionImg = ques.img ? ques.img : null;
-    q.answers = ques.answers;
-
-    response.push(q);
-  }
+  var response =  shuffle(questions);
   return (response);
 };
 
