@@ -12,7 +12,7 @@ var Result = require('./schemas/result');
 var User = require('./schemas/user');
 var Answer = require('./schemas/answer');
 var BigFiveRaw = require('./schemas/bigFiveRaw');
-var Chat = require('./schemas/chat');
+var Comment = require('./schemas/comment');
 var bigFiveQuestions = require('./bigFiveQuestions');
 
 //Function to save the saw big five results to the database
