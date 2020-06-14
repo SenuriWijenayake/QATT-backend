@@ -57,6 +57,18 @@ exports.getUserByEmail = function (email){
   });
 };
 
+//Function to get user by id
+exports.getUserById = function (userId){
+  var query = {
+    _id: mongoose.Types.ObjectId(userId)
+  };
+  return new Promise(function(resolve, reject) {
+    User.findOne(query, function(err, user) {
+      resolve(user);
+    });
+  });
+};
+
 //Function to save user details
 exports.saveUser = function(user) {
   return new Promise(function(resolve, reject) {

@@ -143,21 +143,23 @@ exports.saveComment = function(comment) {
 
     //Check comment order
     db.getAllComments(data).then(function(allComments){
-      var comm = {};
-      comm.userId = comment.userId;
-      comm.userPicture = "bla bla";
-      comm.userName = comment.userName;
-      comm.questionId = comment.questionId;
-      comm.socialPresence = comment.socialPresence;
-      comm.structure = comment.structure;
-      comm.text = comment.oldComment;
-      comm.order = allComments.length + 1;
+      //Get user picture
+      db.getUserById(comment.userId).then(function(user){
+        var comm = {};
+        comm.userId = comment.userId;
+        comm.userPicture = user.profilePicture;
+        comm.userName = comment.userName;
+        comm.questionId = comment.questionId;
+        comm.socialPresence = comment.socialPresence;
+        comm.structure = comment.structure;
+        comm.text = comment.oldComment;
+        comm.order = allComments.length + 1;
 
-      db.saveComment(comm).then(function(allFinalComments) {
-        resolve(allFinalComments);
+        db.saveComment(comm).then(function(allFinalComments) {
+          resolve(allFinalComments);
+        });
       });
     });
-
   });
 };
 
