@@ -5,25 +5,36 @@ var db = require('./db/database');
 var shuffle = require('shuffle-array');
 
 //Function to create the questions
-exports.getAllQuestions = function(order) {
+exports.getAllQuestions = function(data) {
+
+  var order = data.order;
+  var userId = data.userId;
   var questions = utils.questions;
   var newArr = [];
 
   return new Promise(function(resolve, reject) {
     db.getAllCommentCounts().then(function(counts) {
-      for (var i = 0; i < order.length; i++) {
-        var qId = order[i].toString();
-        var commCount = 0;
+      db.getAnswersByUser(userId).then(function(answeredQs){
+        for (var i = 0; i < order.length; i++) {
+          var qId = order[i].toString();
+          var commCount = 0;
 
-        for (var j = 0; j < counts.length; j++) {
-          if (counts[j]._id == qId){
-            commCount = counts[j].count;
+          if (answeredQs.includes(qId)){
+            questions[order[i]-1].attempted = true;
+          } else {
+            questions[order[i]-1].attempted = false;
           }
+
+          for (var j = 0; j < counts.length; j++) {
+            if (counts[j]._id == qId){
+              commCount = counts[j].count;
+            }
+          }
+          questions[order[i]-1].commCount = commCount;
+          newArr.push(questions[order[i]-1]);
         }
-        questions[order[i]-1].commCount = commCount;
-        newArr.push(questions[order[i]-1]);
-      }
-      resolve(newArr);
+        resolve(newArr);
+      });
     });
   });
 };

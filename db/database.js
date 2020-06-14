@@ -69,6 +69,22 @@ exports.getUserById = function (userId){
   });
 };
 
+//Function to get all questions answered by user
+exports.getAnswersByUser = function (userId){
+  var query = {
+    userId: userId
+  };
+  return new Promise(function(resolve, reject) {
+    Answer.find(query, 'questionId' ,function(err, res) {
+      var arr = [];
+      for (var i = 0; i < res.length; i++) {
+       arr.push(res[i].questionId);
+      }
+      resolve(arr);
+    });
+  });
+};
+
 //Function to save user details
 exports.saveUser = function(user) {
   return new Promise(function(resolve, reject) {
