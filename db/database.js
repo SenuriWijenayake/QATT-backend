@@ -166,6 +166,15 @@ exports.getAllComments = function(data) {
   });
 };
 
+//Function to find all comment counts
+exports.getAllCommentCounts = function(data) {
+  return new Promise(function(resolve, reject) {
+    Comment.aggregate([{ $group:{ _id : "$questionId" ,count: { $sum: 1 }}}], function(err, result){
+      resolve(result);
+    });
+  });
+};
+
 //Function to save an answer
 exports.saveAnswer = function(answer) {
   return new Promise(function(resolve, reject) {

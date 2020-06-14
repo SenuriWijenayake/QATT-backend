@@ -96,10 +96,14 @@ var appRouter = function(app) {
 
   //Endpoint to get all the questions and answers
   app.post('/questions', function(req, res) {
-    console.log(req.body);
-    data = logic.getAllQuestions(req.body);
-    result = JSON.stringify(data);
-    res.status(200).send(result);
+    console.log("Request received at all questions");
+    return new Promise(function(resolve, reject) {
+      logic.getAllQuestions(req.body).then(function(questions) {
+        //Retrieve all comments on this question and return
+        result = JSON.stringify(questions);
+        resolve(res.status(200).send(result));
+      });
+    });
   });
 
 

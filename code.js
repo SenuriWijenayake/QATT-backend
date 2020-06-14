@@ -9,11 +9,23 @@ exports.getAllQuestions = function(order) {
   var questions = utils.questions;
   var newArr = [];
 
-  for (var i = 0; i < order.length; i++) {
-    newArr.push(questions[order[i]-1]);
-  }
-  console.log(newArr);
-  return (newArr);
+  return new Promise(function(resolve, reject) {
+    db.getAllCommentCounts().then(function(counts) {
+      for (var i = 0; i < order.length; i++) {
+        var qId = order[i].toString();
+        var commCount = 0;
+
+        for (var j = 0; j < counts.length; j++) {
+          if (counts[j]._id == qId){
+            commCount = counts[j].count;
+          }
+        }
+        questions[order[i]-1].commCount = commCount;
+        newArr.push(questions[order[i]-1]);
+      }
+      resolve(newArr);
+    });
+  });
 };
 
 //Function to get question by Id
