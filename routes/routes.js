@@ -52,7 +52,8 @@ var appRouter = function(app) {
             "gender": obj.gender,
             "structure": obj.structure,
             "socialPresence": obj.socialPresence,
-            "firstVisit" : obj.firstVisit
+            "firstVisit" : obj.firstVisit,
+            "order" : obj.order
           };
           resolve(res.status(200).send(result));
         }
@@ -94,8 +95,9 @@ var appRouter = function(app) {
   });
 
   //Endpoint to get all the questions and answers
-  app.get('/questions', function(req, res) {
-    data = logic.getAllQuestions();
+  app.post('/questions', function(req, res) {
+    console.log(req.body);
+    data = logic.getAllQuestions(req.body);
     result = JSON.stringify(data);
     res.status(200).send(result);
   });

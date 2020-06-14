@@ -83,7 +83,8 @@ exports.saveUser = function(user) {
       field: user.field,
       structure: user.structure,
       socialPresence: user.socialPresence,
-      profilePicture: user.profilePicture
+      profilePicture: user.profilePicture,
+      order : user.order
     });
 
     newUser.save(function(err, newUser) {

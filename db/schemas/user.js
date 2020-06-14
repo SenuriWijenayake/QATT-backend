@@ -15,9 +15,10 @@ var userSchema = new Schema({
   socialPresence : Boolean,
   genderSpecified : {type : String, required: false},
   profilePicture : {type : String, required: false},
-  firstVisit : Boolean
+  firstVisit : { type : Boolean , "default" : true },
+  order: { type : Array , "default" : [] }
 });
 
-var Result = mongoose.model('User', userSchema);
+var User = mongoose.model('User', userSchema);
 
-module.exports = Result;
+module.exports = User;

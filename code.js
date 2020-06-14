@@ -5,10 +5,15 @@ var db = require('./db/database');
 var shuffle = require('shuffle-array');
 
 //Function to create the questions
-exports.getAllQuestions = function() {
+exports.getAllQuestions = function(order) {
   var questions = utils.questions;
-  var response =  shuffle(questions);
-  return (response);
+  var newArr = [];
+
+  for (var i = 0; i < order.length; i++) {
+    newArr.push(questions[order[i]-1]);
+  }
+  console.log(newArr);
+  return (newArr);
 };
 
 //Function to get question by Id
@@ -66,6 +71,8 @@ exports.saveUserData = function(user) {
       if (result) {
         resolve(-1);
       } else {
+        var order = shuffle([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]);
+        user.order = order;
         db.saveUser(user).then(function(user) {
           var obj = {
             "userId" : user._id.toString(),
@@ -74,8 +81,9 @@ exports.saveUserData = function(user) {
             "profilePicture" : user.profilePicture,
             "gender" : user.gender,
             "structure" : user.structure,
-            "socialPresence" : user.socialPresence
-          };
+            "socialPresence" : user.socialPresence,
+            "order" : user.order
+           };
           resolve (obj);
         });
       }
