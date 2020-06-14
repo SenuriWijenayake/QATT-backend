@@ -4,13 +4,15 @@ var Schema = mongoose.Schema;
 // create a schema
 var answerSchema = new Schema({
   userId : String,
-  questionId: Number,
+  socialPresence : Boolean,
+  structure: Boolean,
+  questionId: String,
   oldAnswer : String,
   oldConfidence : Number,
   oldComment: String,
-  newAnswer : String,
-  newConfidence : Number,
-  newComment: String,
+  newAnswer : { type : String, required: false},
+  newConfidence : { type : Number, required: false},
+  newComment: { type : String, required: false},
   submitTime : { type : Date, required: false, default: Date.now },
   editTime : { type : Date, required: false, default: Date.now }
 });

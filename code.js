@@ -112,20 +112,52 @@ exports.getGroupUsers = function(query) {
 };
 
 //Function to save an answer
-exports.saveAnswer = function(ans) {
-
-  var answer = {};
-  answer.userId = ans.userId;
-  answer.questionId = ans.questionId;
-  answer.oldAnswerId = ans.answerId;
-  answer.oldConfidence = ans.confidence;
-  answer.newAnswerId = ans.answerId;
-  answer.newConfidence = ans.confidence;
-
+exports.saveAnswer = function(answer) {
   return new Promise(function(resolve, reject) {
-    db.saveAnswer(answer).then(function(answerId) {
-      resolve(answerId);
+
+    var ans = {};
+    ans.userId = answer.userId;
+    ans.questionId = answer.questionId;
+    ans.structure = answer.structure;
+    ans.socialPresence = answer.socialPresence;
+    ans.oldAnswer = answer.oldAnswer;
+    ans.oldConfidence = answer.oldConfidence;
+    ans.oldComment = answer.oldComment;
+
+    db.saveAnswer(ans).then(function(answerId) {
+      exports.saveComment(answer).then(function(commId){
+        resolve(commId);
+      });
     });
+  });
+};
+
+//Function to save a comment
+exports.saveComment = function(comment) {
+  return new Promise(function(resolve, reject) {
+
+    var data = {};
+    data.socialPresence = comment.socialPresence;
+    data.structure = comment.structure;
+    data.questionId = comment.questionId;
+
+    //Check comment order
+    db.getAllComments(data).then(function(allComments){
+      var comm = {};
+      comm.userId = comment.userId;
+      comm.userPicture = "bla bla";
+      comm.userName = comment.userName;
+      comm.questionId = comment.questionId;
+      comm.socialPresence = comment.socialPresence;
+      comm.structure = comment.structure;
+      comm.text = comment.oldComment;
+      comm.order = allComments.length + 1;
+
+      db.saveComment(comm).then(function(allFinalComments) {
+        resolve(allFinalComments);
+      });
+    });
+
   });
 };
 

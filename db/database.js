@@ -139,21 +139,65 @@ exports.getGroupUsers = function(data) {
   });
 };
 
+//Function to find all comments for a question in group
+exports.getAllComments = function(data) {
+  var query = {
+    socialPresence: data.socialPresence,
+    structure: data.structure,
+    questionId : data.questionId
+  };
+  return new Promise(function(resolve, reject) {
+    Comment.find(query, function(err, result) {
+      resolve(result);
+    });
+  });
+};
+
 //Function to save an answer
 exports.saveAnswer = function(answer) {
   return new Promise(function(resolve, reject) {
     var newAnswer = new Answer({
       userId: answer.userId,
       questionId: answer.questionId,
-      oldAnswerId: answer.oldAnswerId,
+      oldAnswer: answer.oldAnswer,
       oldConfidence: answer.oldConfidence,
-      newAnswerId: answer.newAnswerId ? answer.newAnswerId : answer.oldAnswerId,
-      newConfidence: answer.newConfidence ? answer.newConfidence : answer.oldConfidence
+      oldComment : answer.oldComment,
+      socialPresence : answer.socialPresence,
+      structure : answer.structure
     });
 
     newAnswer.save(function(err, newAnswer) {
       if (err) reject(err);
       resolve(newAnswer._id.toString());
+    });
+  });
+};
+
+//Function to save a comment
+exports.saveComment = function(comment) {
+  return new Promise(function(resolve, reject) {
+    var newComment = new Comment({
+      userId : comment.userId,
+      userPicture : comment.userPicture,
+      userName : comment.userName,
+      questionId : comment.questionId,
+      socialPresence : comment.socialPresence,
+      structure : comment.structure,
+      text : comment.oldComment,
+      order : comment.order
+    });
+
+    newComment.save(function(err, nC) {
+      if (err) reject(err);
+
+      var data = {};
+      data.socialPresence = newComment.socialPresence;
+      data.structure = newComment.structure;
+      data.questionId = newComment.questionId;
+
+      exports.getAllComments(data).then(function(allFinalComments){
+        resolve(allFinalComments)
+      });
     });
   });
 };

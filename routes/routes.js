@@ -81,28 +81,13 @@ var appRouter = function(app) {
   });
 
 
-  app.post('/feedback', function(req, res) {
-
-    console.log("Request received at feedback endpoint");
-    var userAnswer = {};
-
-    userAnswer.userId = req.body.userId;
-    userAnswer.cues = req.body.cues;
-    userAnswer.discussion = req.body.discussion;
-    userAnswer.questionId = parseInt(req.body.questionId);
-    userAnswer.answerId = parseInt(req.body.answerId);
-    userAnswer.confidence = parseFloat(req.body.confidence);
-    userAnswer.explanation = req.body.explanation;
-
+  app.post('/userAnswer', function(req, res) {
+    console.log("Request received at userAnswer endpoint");
     return new Promise(function(resolve, reject) {
-
-      logic.saveAnswer(userAnswer).then(function(id) {
-        if (userAnswer.cues != "Yes") {
-          data = logic.getFeedbackWithoutCues(userAnswer);
-        } else {
-          data = logic.getFeedbackWithCues(userAnswer);
-        }
-        result = JSON.stringify(data);
+      //save as user's answer and as a comment
+      logic.saveAnswer(req.body).then(function(allComments) {
+        //Retrieve all comments on this question and return
+        result = JSON.stringify(allComments);
         resolve(res.status(200).send(result));
       });
     });
