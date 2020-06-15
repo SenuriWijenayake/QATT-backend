@@ -12,7 +12,9 @@ var commentSchema = new Schema({
   timestamp : { type : Date, default: Date.now },
   order : Number,
   text : String,
-  replies : { type : Array , required: false, "default" : [] }
+  replies : { type : Boolean , required: false, "default" : false },
+  isReply : { type : Boolean , "default" : false },
+  parentComment : { type : String, required: false }
 });
 
 var Comment = mongoose.model('Comment', commentSchema);

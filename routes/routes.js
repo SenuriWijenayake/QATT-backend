@@ -81,12 +81,24 @@ var appRouter = function(app) {
     });
   });
 
-
+  //Endpoint to save an answer
   app.post('/userAnswer', function(req, res) {
     console.log("Request received at userAnswer endpoint");
     return new Promise(function(resolve, reject) {
       //save as user's answer and as a comment
       logic.saveAnswer(req.body).then(function(allComments) {
+        //Retrieve all comments on this question and return
+        result = JSON.stringify(allComments);
+        resolve(res.status(200).send(result));
+      });
+    });
+  });
+
+  //Endpoint to save a reply
+  app.post('/saveReply', function(req, res) {
+    console.log("Request received at saveReply endpoint");
+    return new Promise(function(resolve, reject) {
+      logic.saveComment(req.body).then(function(allComments) {
         //Retrieve all comments on this question and return
         result = JSON.stringify(allComments);
         resolve(res.status(200).send(result));
@@ -102,6 +114,16 @@ var appRouter = function(app) {
         //Retrieve all comments on this question and return
         result = JSON.stringify(questions);
         resolve(res.status(200).send(result));
+      });
+    });
+  });
+
+  //Endpoint to get users per group
+  app.post('/userComments', function(req, res) {
+    console.log("Request received at get user comments for question");
+    return new Promise(function(resolve, reject) {
+      logic.getCommentsForQuestion(req.body).then(function(group) {
+        res.status(200).send(group);
       });
     });
   });

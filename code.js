@@ -185,11 +185,22 @@ exports.saveComment = function(comment) {
         comm.structure = comment.structure;
         comm.text = comment.oldComment;
         comm.order = allComments.length + 1;
+        comm.isReply = comment.isReply;
+        comm.parentComment = comment.parentComment;
 
         db.saveComment(comm).then(function(allFinalComments) {
           resolve(allFinalComments);
         });
       });
+    });
+  });
+};
+
+//Function to get all comments posted per question
+exports.getCommentsForQuestion = function(query) {
+  return new Promise(function(resolve, reject) {
+    db.getCommentsForQuestion(query).then(function(comments) {
+      resolve(comments);
     });
   });
 };

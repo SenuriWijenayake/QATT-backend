@@ -85,6 +85,20 @@ exports.getAnswersByUser = function (userId){
   });
 };
 
+//Function to get all comments per question
+exports.getCommentsForQuestion = function (data){
+  var query = {
+    socialPresence: data.socialPresence,
+    structure: data.structure,
+    questionId: data.questionId
+  };
+  return new Promise(function(resolve, reject) {
+    Comment.find(query ,function(err, res) {
+      resolve(res);
+    });
+  });
+};
+
 //Function to save user details
 exports.saveUser = function(user) {
   return new Promise(function(resolve, reject) {
@@ -182,6 +196,26 @@ exports.getAllComments = function(data) {
   });
 };
 
+//Function to update parent comment
+exports.updateParentCommentById = function(parent) {
+  var query = {
+    _id: mongoose.Types.ObjectId(parent)
+  };
+
+  var newData = {
+    replies : true
+  };
+
+  return new Promise(function(resolve, reject) {
+    Comment.findOneAndUpdate(query, newData, {
+      upsert: true
+    }, function(err, newAnswer) {
+      if (err) reject(err);
+      resolve(newAnswer._id.toString());
+    });
+  });
+};
+
 //Function to find all comment counts
 exports.getAllCommentCounts = function(data) {
   return new Promise(function(resolve, reject) {
@@ -221,21 +255,37 @@ exports.saveComment = function(comment) {
       questionId : comment.questionId,
       socialPresence : comment.socialPresence,
       structure : comment.structure,
-      text : comment.oldComment,
-      order : comment.order
+      text : comment.text,
+      order : comment.order,
+      isReply : comment.isReply,
+      parentComment : comment.parentComment
     });
 
     newComment.save(function(err, nC) {
       if (err) reject(err);
+      //If a reply, update parent
+      if (comment.isReply == true){
+        var parentComment = comment.parentComment;
+        exports.updateParentCommentById(parentComment).then(function(){
+          var data = {};
+          data.socialPresence = newComment.socialPresence;
+          data.structure = newComment.structure;
+          data.questionId = newComment.questionId;
 
-      var data = {};
-      data.socialPresence = newComment.socialPresence;
-      data.structure = newComment.structure;
-      data.questionId = newComment.questionId;
+          exports.getAllComments(data).then(function(allFinalComments){
+            resolve(allFinalComments)
+          });
+        });
+      } else {
+        var data = {};
+        data.socialPresence = newComment.socialPresence;
+        data.structure = newComment.structure;
+        data.questionId = newComment.questionId;
 
-      exports.getAllComments(data).then(function(allFinalComments){
-        resolve(allFinalComments)
-      });
+        exports.getAllComments(data).then(function(allFinalComments){
+          resolve(allFinalComments)
+        });
+      }
     });
   });
 };
