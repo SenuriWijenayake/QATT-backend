@@ -156,14 +156,24 @@ exports.saveAnswer = function(answer) {
     ans.oldComment = answer.oldComment;
 
     db.saveAnswer(ans).then(function(answerId) {
-      exports.saveComment(answer).then(function(commId) {
-        resolve(commId);
+      var comment = {
+        userId : answer.userId,
+        questionId : answer.questionId,
+        questionText : answer.questionText,
+        comment : answer.oldComment,
+        socialPresence : answer.socialPresence,
+        structure : answer.structure,
+        userName : answer.userName,
+        isReply : answer.isReply
+      };
+      exports.saveComment(comment).then(function(result) {
+        resolve(result);
       });
     });
   });
 };
 
-//Function to save a comment
+//Function to save a comment or a reply
 exports.saveComment = function(comment) {
   return new Promise(function(resolve, reject) {
 
@@ -183,7 +193,7 @@ exports.saveComment = function(comment) {
         comm.questionId = comment.questionId;
         comm.socialPresence = comment.socialPresence;
         comm.structure = comment.structure;
-        comm.text = comment.oldComment;
+        comm.text = comment.comment;
         comm.order = allComments.length + 1;
         comm.isReply = comment.isReply;
         comm.parentComment = comment.parentComment;
@@ -196,9 +206,7 @@ exports.saveComment = function(comment) {
             structure: comment.structure,
             comments: []
           };
-
           final.comments = exports.formatAllComments(allFinalComments);
-          console.log(final);
           resolve(final);
         });
       });
