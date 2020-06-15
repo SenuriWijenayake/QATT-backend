@@ -190,9 +190,9 @@ exports.getAllComments = function(data) {
     questionId : data.questionId
   };
   return new Promise(function(resolve, reject) {
-    Comment.find(query, function(err, result) {
+    Comment.find(query,function(err, result) {
       resolve(result);
-    });
+    }).sort({'order' : 1});;
   });
 };
 

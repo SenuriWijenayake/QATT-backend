@@ -14,24 +14,24 @@ exports.getAllQuestions = function(data) {
 
   return new Promise(function(resolve, reject) {
     db.getAllCommentCounts().then(function(counts) {
-      db.getAnswersByUser(userId).then(function(answeredQs){
+      db.getAnswersByUser(userId).then(function(answeredQs) {
         for (var i = 0; i < order.length; i++) {
           var qId = order[i].toString();
           var commCount = 0;
 
-          if (answeredQs.includes(qId)){
-            questions[order[i]-1].attempted = true;
+          if (answeredQs.includes(qId)) {
+            questions[order[i] - 1].attempted = true;
           } else {
-            questions[order[i]-1].attempted = false;
+            questions[order[i] - 1].attempted = false;
           }
 
           for (var j = 0; j < counts.length; j++) {
-            if (counts[j]._id == qId){
+            if (counts[j]._id == qId) {
               commCount = counts[j].count;
             }
           }
-          questions[order[i]-1].commCount = commCount;
-          newArr.push(questions[order[i]-1]);
+          questions[order[i] - 1].commCount = commCount;
+          newArr.push(questions[order[i] - 1]);
         }
         resolve(newArr);
       });
@@ -94,20 +94,20 @@ exports.saveUserData = function(user) {
       if (result) {
         resolve(-1);
       } else {
-        var order = shuffle([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]);
+        var order = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]);
         user.order = order;
         db.saveUser(user).then(function(user) {
           var obj = {
-            "userId" : user._id.toString(),
-            "name" : user.name,
-            "email" : user.email,
-            "profilePicture" : user.profilePicture,
-            "gender" : user.gender,
-            "structure" : user.structure,
-            "socialPresence" : user.socialPresence,
-            "order" : user.order
-           };
-          resolve (obj);
+            "userId": user._id.toString(),
+            "name": user.name,
+            "email": user.email,
+            "profilePicture": user.profilePicture,
+            "gender": user.gender,
+            "structure": user.structure,
+            "socialPresence": user.socialPresence,
+            "order": user.order
+          };
+          resolve(obj);
         });
       }
     });
@@ -156,7 +156,7 @@ exports.saveAnswer = function(answer) {
     ans.oldComment = answer.oldComment;
 
     db.saveAnswer(ans).then(function(answerId) {
-      exports.saveComment(answer).then(function(commId){
+      exports.saveComment(answer).then(function(commId) {
         resolve(commId);
       });
     });
@@ -173,9 +173,9 @@ exports.saveComment = function(comment) {
     data.questionId = comment.questionId;
 
     //Check comment order
-    db.getAllComments(data).then(function(allComments){
+    db.getAllComments(data).then(function(allComments) {
       //Get user picture
-      db.getUserById(comment.userId).then(function(user){
+      db.getUserById(comment.userId).then(function(user) {
         var comm = {};
         comm.userId = comment.userId;
         comm.userPicture = user.profilePicture;
@@ -189,21 +189,86 @@ exports.saveComment = function(comment) {
         comm.parentComment = comment.parentComment;
 
         db.saveComment(comm).then(function(allFinalComments) {
-          resolve(allFinalComments);
+          var final = {
+            questionText: comment.questionText,
+            questionId: comment.questionId,
+            socialPresence: comment.socialPresence,
+            structure: comment.structure,
+            comments: []
+          };
+
+          final.comments = exports.formatAllComments(allFinalComments);
+          console.log(final);
+          resolve(final);
         });
       });
     });
   });
 };
 
+//Function to format comments for view
+exports.formatAllComments = function(allFinalComments) {
+  //Arrange comments and replies in order
+  var final = [];
+  var all_comms = [];
+  var all_replies = [];
+
+  for (var i = 0; i < allFinalComments.length; i++) {
+    if (allFinalComments[i].isReply == true) {
+      all_replies.push(allFinalComments[i]);
+    } else {
+      all_comms.push(allFinalComments[i]);
+    }
+  }
+
+  for (var j = 0; j < all_comms.length; j++) {
+    var c = {
+      id: all_comms[j]._id.toString(),
+      profilePicture: all_comms[j].userPicture,
+      username: all_comms[j].userName,
+      comment: all_comms[j].text,
+      order: all_comms[j].order,
+      timestamp: all_comms[j].timestamp,
+      replies: []
+    };
+    if (all_comms[j].replies == true) {
+      for (var k = 0; k < all_replies.length; k++) {
+        if (all_replies[k].parentComment == c.id) {
+          var r = {
+            id: all_replies[k]._id.toString(),
+            profilePicture: all_replies[k].userPicture,
+            username: all_replies[k].userName,
+            comment: all_replies[k].text,
+            order: all_replies[k].order,
+            timestamp: all_replies[k].timestamp,
+            replies: []
+          };
+          c.replies.push(r);
+        }
+      }
+    }
+    final.push(c);
+  }
+  return (final);
+};
+
 //Function to get all comments posted per question
-exports.getCommentsForQuestion = function(query) {
+exports.getCommentsForQuestion = function(data) {
+  var final = {
+    questionText: data.questionText,
+    questionId: data.questionId,
+    socialPresence: data.socialPresence,
+    structure: data.structure,
+    comments: []
+  }
   return new Promise(function(resolve, reject) {
-    db.getCommentsForQuestion(query).then(function(comments) {
-      resolve(comments);
+    db.getAllComments(data).then(function(comments) {
+      final.comments = exports.formatAllComments(comments);
+      resolve(final);
     });
   });
 };
+
 
 //Function to update an answer
 exports.updateAnswer = function(answer) {
