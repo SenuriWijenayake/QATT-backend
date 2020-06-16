@@ -196,6 +196,31 @@ exports.getAllComments = function(data) {
   });
 };
 
+//Function to update the vote count of a comment
+exports.updateVoteForComment = function(data) {
+  var query = {
+    _id: mongoose.Types.ObjectId(data.commentId)
+  };
+
+  var newData = {};
+
+  if (data.isUpvote){
+    newData = {$inc : {'upVotes' : 1}}
+  } else {
+    newData = {$inc : {'downVotes' : 1}}
+  }
+
+  return new Promise(function(resolve, reject) {
+    Comment.findOneAndUpdate(query, newData, {
+      upsert: true
+    }, function(err, newAnswer) {
+      if (err) reject(err);
+      resolve(newAnswer._id.toString());
+    });
+  });
+};
+
+
 //Function to update parent comment
 exports.updateParentCommentById = function(parent) {
   var query = {

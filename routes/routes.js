@@ -106,6 +106,18 @@ var appRouter = function(app) {
     });
   });
 
+  //Endpoint to update vote count for a given comment
+  app.post('/updateVoteForComment', function(req, res) {
+    console.log("Request received at updateVoteForComment endpoint");
+    return new Promise(function(resolve, reject) {
+      logic.updateVoteForComment(req.body).then(function(allComments) {
+        //Retrieve all comments on this question and return
+        result = JSON.stringify(allComments);
+        resolve(res.status(200).send(result));
+      });
+    });
+  });
+
   //Endpoint to get all the questions and answers
   app.post('/questions', function(req, res) {
     console.log("Request received at all questions");

@@ -264,6 +264,37 @@ exports.formatAllComments = function(allFinalComments) {
   return (final);
 };
 
+//Function to update the upvote/downvote count
+exports.updateVoteForComment = function(data) {
+  var query = {
+    isUpvote : data.vote,
+    commentId : data.commentId
+  };
+  var next = {
+    socialPresence : data.socialPresence,
+    structure : data.structure,
+    questionId : data.questionId
+  };
+
+  return new Promise(function(resolve, reject) {
+    db.updateVoteForComment(query).then(function(commentId) {
+      db.getAllComments(next).then(function(comments) {
+
+        var final = {
+          questionText: data.questionText,
+          questionId: data.questionId,
+          socialPresence: data.socialPresence,
+          structure: data.structure,
+          comments: []
+        };
+
+        final.comments = exports.formatAllComments(comments);
+        resolve(final);
+      });
+    });
+  });
+};
+
 //Function to get all comments posted per question
 exports.getCommentsForQuestion = function(data) {
   var final = {
