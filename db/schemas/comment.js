@@ -14,7 +14,9 @@ var commentSchema = new Schema({
   text : String,
   replies : { type : Boolean , required: false, "default" : false },
   isReply : { type : Boolean , "default" : false },
-  parentComment : { type : String, required: false }
+  parentComment : { type : String, required: false },
+  upVotes : { type : Number , required: true, "default" : 0 },
+  downVotes : { type : Number , required: true, "default" : 0 }
 });
 
 var Comment = mongoose.model('Comment', commentSchema);

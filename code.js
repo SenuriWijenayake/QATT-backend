@@ -237,6 +237,8 @@ exports.formatAllComments = function(allFinalComments) {
       comment: all_comms[j].text,
       order: all_comms[j].order,
       timestamp: all_comms[j].timestamp,
+      upVotes : all_comms[j].upVotes,
+      downVotes : all_comms[j].downVotes,
       replies: []
     };
     if (all_comms[j].replies == true) {
@@ -249,6 +251,8 @@ exports.formatAllComments = function(allFinalComments) {
             comment: all_replies[k].text,
             order: all_replies[k].order,
             timestamp: all_replies[k].timestamp,
+            upVotes : all_replies[k].upVotes,
+            downVotes : all_replies[k].downVotes,
             replies: []
           };
           c.replies.push(r);

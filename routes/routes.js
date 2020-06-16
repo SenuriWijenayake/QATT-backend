@@ -118,7 +118,7 @@ var appRouter = function(app) {
     });
   });
 
-  //Endpoint to get users per group
+  //Endpoint to get all comments for the question
   app.post('/userComments', function(req, res) {
     console.log("Request received at get user comments for question");
     return new Promise(function(resolve, reject) {
