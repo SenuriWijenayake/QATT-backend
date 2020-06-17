@@ -233,6 +233,7 @@ exports.formatAllComments = function(allFinalComments) {
     var c = {
       id: all_comms[j]._id.toString(),
       profilePicture: all_comms[j].userPicture,
+      userId: all_comms[j].userId,
       username: all_comms[j].userName,
       comment: all_comms[j].text,
       order: all_comms[j].order,
@@ -248,6 +249,7 @@ exports.formatAllComments = function(allFinalComments) {
             id: all_replies[k]._id.toString(),
             profilePicture: all_replies[k].userPicture,
             username: all_replies[k].userName,
+            userId: all_replies[k].userId,
             comment: all_replies[k].text,
             order: all_replies[k].order,
             timestamp: all_replies[k].timestamp,
