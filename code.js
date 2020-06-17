@@ -124,6 +124,17 @@ exports.loginUser = function(user) {
 };
 
 
+//Function to get all questions answered by a given use
+exports.getAnswersByUser = function(data) {
+  var userId = data.userId;
+  return new Promise(function(resolve, reject) {
+    db.getAnswersByUser(userId).then(function(arr) {
+      resolve(arr);
+    });
+  });
+};
+
+
 //Function to login user
 exports.updateUser = function(user) {
   return new Promise(function(resolve, reject) {

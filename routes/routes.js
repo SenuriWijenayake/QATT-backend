@@ -130,6 +130,17 @@ var appRouter = function(app) {
     });
   });
 
+  //Endpoint to get all questions answered by a given user
+  app.post('/questionsPerUser', function(req, res) {
+    console.log("Request received at all questionsPerUser");
+    return new Promise(function(resolve, reject) {
+      logic.getAnswersByUser(req.body).then(function(questions) {
+        result = JSON.stringify(questions);
+        resolve(res.status(200).send(result));
+      });
+    });
+  });
+
   //Endpoint to get all comments for the question
   app.post('/userComments', function(req, res) {
     console.log("Request received at get user comments for question");
