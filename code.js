@@ -39,6 +39,41 @@ exports.getAllQuestions = function(data) {
   });
 };
 
+//Function to create the questions in the vote page
+exports.getAllQuestionsToVote = function(data) {
+
+  var order = data.order;
+  var userId = data.userId;
+  var questions = utils.questions;
+  var newArr = [];
+
+  return new Promise(function(resolve, reject) {
+    db.getAllVoteCounts().then(function(counts) {
+      db.getVotesByUser(userId).then(function(votedQs) {
+        for (var i = 0; i < order.length; i++) {
+          var qId = order[i].toString();
+          var voteCount = 0;
+
+          if (votedQs.includes(qId)) {
+            questions[order[i] - 1].voted = true;
+          } else {
+            questions[order[i] - 1].voted = false;
+          }
+
+          for (var j = 0; j < counts.length; j++) {
+            if (counts[j]._id == qId) {
+              voteCount = counts[j].count;
+            }
+          }
+          questions[order[i] - 1].voteCount = voteCount;
+          newArr.push(questions[order[i] - 1]);
+        }
+        resolve(newArr);
+      });
+    });
+  });
+};
+
 //Function to get question by Id
 exports.getQuestionByQId = function(id) {
   var questions = utils.questions;
@@ -136,9 +171,14 @@ exports.getAnswersByUser = function(data) {
 
 
 //Function to login user
-exports.updateUser = function(user) {
+exports.updateUser = function(data) {
+  var query = {
+    userId: data.userId,
+    type: data.type,
+    value: data.value
+  };
   return new Promise(function(resolve, reject) {
-    db.updateUser(user).then(function(obj) {
+    db.updateUser(query).then(function(obj) {
       resolve(obj);
     });
   });
@@ -168,14 +208,14 @@ exports.saveAnswer = function(answer) {
 
     db.saveAnswer(ans).then(function(answerId) {
       var comment = {
-        userId : answer.userId,
-        questionId : answer.questionId,
-        questionText : answer.questionText,
-        comment : answer.oldComment,
-        socialPresence : answer.socialPresence,
-        structure : answer.structure,
-        userName : answer.userName,
-        isReply : answer.isReply
+        userId: answer.userId,
+        questionId: answer.questionId,
+        questionText: answer.questionText,
+        comment: answer.oldComment,
+        socialPresence: answer.socialPresence,
+        structure: answer.structure,
+        userName: answer.userName,
+        isReply: answer.isReply
       };
       exports.saveComment(comment).then(function(result) {
         resolve(result);
@@ -249,8 +289,8 @@ exports.formatAllComments = function(allFinalComments) {
       comment: all_comms[j].text,
       order: all_comms[j].order,
       timestamp: all_comms[j].timestamp,
-      upVotes : all_comms[j].upVotes,
-      downVotes : all_comms[j].downVotes,
+      upVotes: all_comms[j].upVotes,
+      downVotes: all_comms[j].downVotes,
       replies: []
     };
     if (all_comms[j].replies == true) {
@@ -264,8 +304,8 @@ exports.formatAllComments = function(allFinalComments) {
             comment: all_replies[k].text,
             order: all_replies[k].order,
             timestamp: all_replies[k].timestamp,
-            upVotes : all_replies[k].upVotes,
-            downVotes : all_replies[k].downVotes,
+            upVotes: all_replies[k].upVotes,
+            downVotes: all_replies[k].downVotes,
             replies: []
           };
           c.replies.push(r);
@@ -280,13 +320,13 @@ exports.formatAllComments = function(allFinalComments) {
 //Function to update the upvote/downvote count
 exports.updateVoteForComment = function(data) {
   var query = {
-    isUpvote : data.vote,
-    commentId : data.commentId
+    isUpvote: data.vote,
+    commentId: data.commentId
   };
   var next = {
-    socialPresence : data.socialPresence,
-    structure : data.structure,
-    questionId : data.questionId
+    socialPresence: data.socialPresence,
+    structure: data.structure,
+    questionId: data.questionId
   };
 
   return new Promise(function(resolve, reject) {
@@ -329,8 +369,28 @@ exports.getCommentsForQuestion = function(data) {
 //Function to update an answer
 exports.updateAnswer = function(answer) {
   return new Promise(function(resolve, reject) {
-    db.updateAnswer(answer).then(function(answerId) {
-      resolve(answerId);
+    var ans = {};
+    ans.userId = answer.userId;
+    ans.questionId = answer.questionId;
+    ans.newAnswer = answer.newAnswer;
+    ans.newConfidence = answer.newConfidence;
+    ans.newComment = answer.newComment;
+
+    db.updateAnswer(ans).then(function(answerId) {
+      db.getUserById(answer.userId).then(function(user) {
+        var vote = {
+          userId: answer.userId,
+          userName: answer.userName,
+          userPicture : user.profilePicture,
+          questionId: answer.questionId,
+          socialPresence: answer.socialPresence,
+          structure: answer.structure,
+          vote: answer.newAnswer
+        };
+        db.saveVote(vote).then(function(result) {
+          resolve(result);
+        });
+      });
     });
   });
 };

@@ -16,6 +16,7 @@ var userSchema = new Schema({
   genderSpecified : {type : String, required: false},
   profilePicture : {type : String, required: false},
   firstVisit : { type : Boolean , "default" : true },
+  completedComments : { type : Boolean , "default" : false },
   order: { type : Array , "default" : [] }
 });
 

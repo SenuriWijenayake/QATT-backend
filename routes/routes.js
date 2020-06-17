@@ -53,7 +53,8 @@ var appRouter = function(app) {
             "structure": obj.structure,
             "socialPresence": obj.socialPresence,
             "firstVisit" : obj.firstVisit,
-            "order" : obj.order
+            "order" : obj.order,
+            "completedComments" : obj.completedComments
           };
           resolve(res.status(200).send(result));
         }
@@ -130,6 +131,18 @@ var appRouter = function(app) {
     });
   });
 
+  //Endpoint to get all the questions and votes
+  app.post('/questionsAtVote', function(req, res) {
+    console.log("Request received at questionsAtVote");
+    return new Promise(function(resolve, reject) {
+      logic.getAllQuestionsToVote(req.body).then(function(questions) {
+        //Retrieve all comments on this question and return
+        result = JSON.stringify(questions);
+        resolve(res.status(200).send(result));
+      });
+    });
+  });
+
   //Endpoint to get all questions answered by a given user
   app.post('/questionsPerUser', function(req, res) {
     console.log("Request received at all questionsPerUser");
@@ -176,16 +189,8 @@ var appRouter = function(app) {
   //Endpoint to update answer
   app.post('/updateAnswer', function(req, res) {
     console.log("Request received at update answer");
-    var userAnswer = {};
-
-    userAnswer.userId = req.body.userId;
-    userAnswer.questionId = parseInt(req.body.questionId);
-    userAnswer.newAnswerId = parseInt(req.body.answerId);
-    userAnswer.newConfidence = parseFloat(req.body.confidence);
-    userAnswer.newExplanation = req.body.explanation;
-
     return new Promise(function(resolve, reject) {
-      logic.updateAnswer(userAnswer).then(function(id) {
+      logic.updateAnswer(req.body).then(function(id) {
         resolve(res.status(200).send(id));
       });
     });

@@ -13,6 +13,7 @@ var User = require('./schemas/user');
 var Answer = require('./schemas/answer');
 var BigFiveRaw = require('./schemas/bigFiveRaw');
 var Comment = require('./schemas/comment');
+var Vote = require('./schemas/vote');
 var bigFiveQuestions = require('./bigFiveQuestions');
 
 //Function to save the saw big five results to the database
@@ -85,6 +86,22 @@ exports.getAnswersByUser = function (userId){
   });
 };
 
+//Function to get all questions voted by a user
+exports.getVotesByUser = function (userId){
+  var query = {
+    userId: userId
+  };
+  return new Promise(function(resolve, reject) {
+    Vote.find(query, 'questionId' ,function(err, res) {
+      var arr = [];
+      for (var i = 0; i < res.length; i++) {
+       arr.push(res[i].questionId);
+      }
+      resolve(arr);
+    });
+  });
+};
+
 //Function to get all comments per question
 exports.getCommentsForQuestion = function (data){
   var query = {
@@ -146,12 +163,19 @@ exports.loginUser = function(user) {
 
 //Function to update user
 exports.updateUser = function(data) {
+  var newData = {};
   var query = {
     _id: mongoose.Types.ObjectId(data.userId)
   };
 
-  var newData = {
-    firstVisit : data.firstVisit
+  if (data.type == "firstVisit"){
+    newData = {
+      firstVisit : data.value
+    }
+  } else {
+    newData = {
+      completedComments : data.value
+    }
   }
 
   return new Promise(function(resolve, reject) {
@@ -242,9 +266,19 @@ exports.updateParentCommentById = function(parent) {
 };
 
 //Function to find all comment counts
-exports.getAllCommentCounts = function(data) {
+exports.getAllCommentCounts = function() {
   return new Promise(function(resolve, reject) {
     Comment.aggregate([{ $group:{ _id : "$questionId" ,count: { $sum: 1 }}}], function(err, result){
+      resolve(result);
+    });
+  });
+};
+
+
+//Function to find all vote counts
+exports.getAllVoteCounts = function() {
+  return new Promise(function(resolve, reject) {
+    Vote.aggregate([{ $group:{ _id : "$questionId" ,count: { $sum: 1 }}}], function(err, result){
       resolve(result);
     });
   });
@@ -266,6 +300,26 @@ exports.saveAnswer = function(answer) {
     newAnswer.save(function(err, newAnswer) {
       if (err) reject(err);
       resolve(newAnswer._id.toString());
+    });
+  });
+};
+
+//Function to save a vote
+exports.saveVote = function(answer) {
+  return new Promise(function(resolve, reject) {
+    var newVote = new Vote({
+      userId: answer.userId,
+      userName: answer.userName,
+      userPicture : answer.userPicture,
+      questionId: answer.questionId,
+      socialPresence: answer.socialPresence,
+      structure: answer.structure,
+      vote: answer.vote
+    });
+
+    newVote.save(function(err, newVote) {
+      if (err) reject(err);
+      resolve(newVote._id.toString());
     });
   });
 };
@@ -323,9 +377,9 @@ exports.updateAnswer = function(answer) {
     questionId: answer.questionId
   };
   var newData = {
-    newAnswerId: answer.newAnswerId,
+    newAnswer: answer.newAnswer,
     newConfidence: answer.newConfidence,
-    newExplanation: answer.newExplanation,
+    newComment: answer.newComment,
     editTime: Date.now()
   };
 
