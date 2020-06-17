@@ -192,7 +192,7 @@ exports.getAllComments = function(data) {
   return new Promise(function(resolve, reject) {
     Comment.find(query,function(err, result) {
       resolve(result);
-    }).sort({'order' : 1});;
+    }).sort({'upVotes' : -1, 'totalVotes': -1, 'order' : 1});
   });
 };
 
@@ -205,9 +205,9 @@ exports.updateVoteForComment = function(data) {
   var newData = {};
 
   if (data.isUpvote){
-    newData = {$inc : {'upVotes' : 1}}
+    newData = {$inc : {'upVotes' : 1, 'totalVotes': 1}}
   } else {
-    newData = {$inc : {'downVotes' : 1}}
+    newData = {$inc : {'downVotes' : 1, 'totalVotes' : -1}}
   }
 
   return new Promise(function(resolve, reject) {
