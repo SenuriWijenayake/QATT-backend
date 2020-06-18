@@ -70,6 +70,20 @@ exports.getUserById = function (userId){
   });
 };
 
+//Function to get all votes per question
+exports.getVotesForQuestion = function (data){
+  var query = {
+    questionId : data.questionId,
+    structure : data.structure,
+    socialPresence : data.socialPresence
+  };
+  return new Promise(function(resolve, reject) {
+    Vote.find(query, 'userId userName userPicture vote' ,function(err, res) {
+      resolve(res);
+    });
+  });
+};
+
 //Function to get all questions answered by user
 exports.getAnswersByUser = function (userId){
   var query = {
@@ -200,8 +214,30 @@ exports.getGroupUsers = function(data) {
     _id: {$ne : mongoose.Types.ObjectId(thisUser)}
   };
   return new Promise(function(resolve, reject) {
-    User.find(query, 'userId name gender age profilePicture', function(err, result) {
+    User.find(query, 'name gender age profilePicture', function(err, result) {
       resolve(result);
+    });
+  });
+};
+
+//Function to find all users in a group
+exports.getAllGroupUsers = function(data) {
+  var query = {
+    socialPresence: data.socialPresence,
+    structure: data.structure
+  };
+  return new Promise(function(resolve, reject) {
+    User.find(query, 'name profilePicture', function(err, result) {
+      var final = [];
+      for (var i = 0; i < result.length; i++) {
+        var obj = {
+          userId : result[i]._id.toString(),
+          name : result[i].name,
+          profilePicture : result[i].profilePicture
+        };
+        final.push(obj);
+      }
+      resolve(final);
     });
   });
 };

@@ -365,7 +365,6 @@ exports.getCommentsForQuestion = function(data) {
   });
 };
 
-
 //Function to update an answer
 exports.updateAnswer = function(answer) {
   return new Promise(function(resolve, reject) {
@@ -390,6 +389,49 @@ exports.updateAnswer = function(answer) {
         db.saveVote(vote).then(function(result) {
           resolve(result);
         });
+      });
+    });
+  });
+};
+
+//Function to get all votes per question
+exports.getVotesForQuestion = function(query){
+  return new Promise(function(resolve, reject) {
+    db.getVotesForQuestion(query).then(function(votes) {
+
+      db.getAllGroupUsers(query).then(function(users){
+        var finalVotes = [];
+        var votedUsers = [];
+
+        //For those who have voted
+        for (var i = 0; i < votes.length; i++) {
+          var obj = {
+            userName : votes[i].userName,
+            userPicture : votes[i].userPicture,
+            vote : votes[i].vote
+          }
+          votedUsers.push(votes[i].userId);
+          finalVotes.push(obj);
+        }
+
+        //For those who have not voted
+        for (var j = 0; j < users.length; j++) {
+         if (!votedUsers.includes(users[j].userId)) {
+           var obj = {
+             userName : users[j].name,
+             userPicture : users[j].profilePicture,
+             vote : 'not-attempted'
+           }
+           finalVotes.push(obj);
+         }
+        }
+
+        //Preparing the final response
+        var final = {
+          questionText : query.questionText,
+          votes : finalVotes
+        };
+        resolve(final);
       });
     });
   });

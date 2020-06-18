@@ -72,6 +72,16 @@ var appRouter = function(app) {
     });
   });
 
+  //Endpoint to get votes per question
+  app.post('/displayVotes', function(req, res) {
+    console.log("Request received at displayVotes");
+    return new Promise(function(resolve, reject) {
+      logic.getVotesForQuestion(req.body).then(function(obj) {
+        res.status(200).send(obj);
+      });
+    });
+  });
+
   //Endpoint to update user status
   app.post('/updateuser', function(req, res) {
     console.log("Request received at update user");
