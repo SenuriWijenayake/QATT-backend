@@ -146,7 +146,6 @@ var appRouter = function(app) {
     console.log("Request received at questionsAtVote");
     return new Promise(function(resolve, reject) {
       logic.getAllQuestionsToVote(req.body).then(function(questions) {
-        //Retrieve all comments on this question and return
         result = JSON.stringify(questions);
         resolve(res.status(200).send(result));
       });
@@ -159,6 +158,17 @@ var appRouter = function(app) {
     return new Promise(function(resolve, reject) {
       logic.getAnswersByUser(req.body).then(function(questions) {
         result = JSON.stringify(questions);
+        resolve(res.status(200).send(result));
+      });
+    });
+  });
+
+  //Endpoint to get all topics voted by a auser
+  app.post('/votesPerUser', function(req, res) {
+    console.log("Request received at votesPerUser");
+    return new Promise(function(resolve, reject) {
+      logic.getVotesByUser(req.body).then(function(questionsVoted) {
+        result = JSON.stringify(questionsVoted);
         resolve(res.status(200).send(result));
       });
     });

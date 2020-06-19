@@ -100,6 +100,7 @@ exports.getAnswersByUser = function (userId){
   });
 };
 
+
 //Function to get all questions voted by a user
 exports.getVotesByUser = function (userId){
   var query = {

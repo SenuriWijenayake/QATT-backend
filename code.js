@@ -158,6 +158,15 @@ exports.loginUser = function(user) {
   });
 };
 
+//Function to get votes by user
+exports.getVotesByUser = function(data) {
+  return new Promise(function(resolve, reject) {
+    db.getVotesByUser(data.userId).then(function(obj) {
+      resolve(obj);
+    });
+  });
+};
+
 
 //Function to get all questions answered by a given use
 exports.getAnswersByUser = function(data) {
