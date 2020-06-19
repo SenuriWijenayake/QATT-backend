@@ -213,7 +213,7 @@ var appRouter = function(app) {
       logic.updateUser(data).then(function(userId) {
         response = logic.processBigFive(req.body);
         console.log(code);
-        res.status(200).send("<h2 style='padding:20px; text-align:center;'> Thank you for your participation! <br> <br> Please use the following code to claim your reward. <br/><br/>Your code is<br/><p style='color:red;font-size:35px;'>" + code + "</p></h2>");
+        res.status(200).send("<h2 style='padding:20px; text-align:center;'> Thank you for your participation! <br> <br> Please email the following code to wijenayakes@unimelb.edu.au to claim your reward. <br/><br/>Your code is<br/><p style='color:red;font-size:35px;'>" + code + "</p></h2>");
       });
     });
   });
