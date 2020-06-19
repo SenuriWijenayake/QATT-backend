@@ -52,9 +52,10 @@ var appRouter = function(app) {
             "gender": obj.gender,
             "structure": obj.structure,
             "socialPresence": obj.socialPresence,
-            "firstVisit" : obj.firstVisit,
-            "order" : obj.order,
-            "completedComments" : obj.completedComments
+            "firstVisit": obj.firstVisit,
+            "order": obj.order,
+            "completedComments": obj.completedComments,
+            "completedVotes": obj.completedVotes
           };
           resolve(res.status(200).send(result));
         }
@@ -202,8 +203,19 @@ var appRouter = function(app) {
   //Endpoint to process the big five data
   app.post('/bigFiveData', function(req, res) {
     console.log("Request received at big five");
-    response = logic.processBigFive(req.body);
-    res.status(200).send("<img src='http://blog.postable.com/wp-content/uploads/2017/07/TY_wedding_header.png' width='100%' height='100%'>");
+    var code = req.body.userId + "_" + Date.now();
+    return new Promise(function(resolve, reject) {
+      var data = {
+        userId: req.body.userId,
+        type: "bigfive",
+        value: code
+      };
+      logic.updateUser(data).then(function(userId) {
+        response = logic.processBigFive(req.body);
+        console.log(code);
+        res.status(200).send("<h2 style='padding:20px; text-align:center;'> Thank you for your participation! <br> <br> Please use the following code to claim your reward. <br/><br/>Your code is<br/><p style='color:red;font-size:35px;'>" + code + "</p></h2>");
+      });
+    });
   });
 
   //Endpoint to update answer

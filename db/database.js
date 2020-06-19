@@ -187,9 +187,17 @@ exports.updateUser = function(data) {
     newData = {
       firstVisit : data.value
     }
-  } else {
+  } else if (data.type == "completedComments") {
     newData = {
       completedComments : data.value
+    }
+  } else if (data.type == "completedVotes") {
+    newData = {
+      completedVotes : data.value
+    }
+  } else {
+    newData = {
+      code : data.value
     }
   }
 

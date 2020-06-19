@@ -17,7 +17,9 @@ var userSchema = new Schema({
   profilePicture : {type : String, required: false},
   firstVisit : { type : Boolean , "default" : true },
   completedComments : { type : Boolean , "default" : false },
-  order: { type : Array , "default" : [] }
+  completedVotes : { type : Boolean , "default" : false },
+  order: { type : Array , "default" : [] },
+  code : {type : String, required: false}
 });
 
 var User = mongoose.model('User', userSchema);
