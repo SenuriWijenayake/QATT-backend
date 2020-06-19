@@ -19,7 +19,8 @@ var userSchema = new Schema({
   completedComments : { type : Boolean , "default" : false },
   completedVotes : { type : Boolean , "default" : false },
   order: { type : Array , "default" : [] },
-  code : {type : String, required: false}
+  code : {type : String, required: false},
+  paid : { type : Boolean , "default" : false }
 });
 
 var User = mongoose.model('User', userSchema);
