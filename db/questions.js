@@ -26,7 +26,7 @@ module.exports = [
   },
   {
     "questionNumber": "6",
-    "text": "Should there be religious exemptions to the law?",
+    "text": "Has religion been a good thing for Humanity?",
     "type": "Religion"
   },
   {
@@ -41,7 +41,7 @@ module.exports = [
   },
   {
     "questionNumber": "9",
-    "text": "Should all transgender athletes have to compete in men’s division?",
+    "text": "Should quotas for women on boards and in managerial positions be mandatory?",
     "type": "Gender"
   },
   {
@@ -51,7 +51,7 @@ module.exports = [
   },
   {
     "questionNumber": "11",
-    "text": "Should the death penalty be abolished?",
+    "text": "Should the death penalty be abolished worldwide?",
     "type": "Society"
   },
   {
