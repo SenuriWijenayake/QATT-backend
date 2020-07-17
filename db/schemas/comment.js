@@ -15,8 +15,8 @@ var commentSchema = new Schema({
   replies : { type : Boolean , required: false, "default" : false },
   isReply : { type : Boolean , "default" : false },
   parentComment : { type : String, required: false },
-  upVotes : { type : Number , required: true, "default" : 0 },
-  downVotes : { type : Number , required: true, "default" : 0 },
+  upVotes : { type : Array , required: true, "default" : [] },
+  downVotes : { type : Array , required: true, "default" : [] },
   totalVotes : { type : Number , required: true, "default" : 0 }
 });
 

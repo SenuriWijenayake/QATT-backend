@@ -298,10 +298,38 @@ exports.formatAllComments = function(allFinalComments) {
       comment: all_comms[j].text,
       order: all_comms[j].order,
       timestamp: all_comms[j].timestamp,
-      upVotes: all_comms[j].upVotes,
-      downVotes: all_comms[j].downVotes,
+      upVotes: [],
+      downVotes: [],
       replies: []
     };
+
+    // Processing the upvotes
+    if (all_comms[j].upVotes.length > 0){
+      var upVotes = [];
+      for (var x = 0; x < all_comms[j].upVotes.length; x++) {
+        var vote = {
+          userId: all_comms[j].upVotes[x].userId,
+          timestamp: all_comms[j].upVotes[x].timestamp
+        };
+        upVotes.push(vote);
+      }
+      c.upVotes = upVotes;
+    }
+
+    // Processing the downvotes
+    if (all_comms[j].downVotes.length > 0){
+      var downVotes = [];
+      for (var y = 0; y < all_comms[j].downVotes.length; y++) {
+        var vote = {
+          userId: all_comms[j].downVotes[y].userId,
+          timestamp: all_comms[j].downVotes[y].timestamp
+        };
+        downVotes.push(vote);
+      }
+      c.downVotes = downVotes;
+    }
+
+    //Processing Replies
     if (all_comms[j].replies == true) {
       for (var k = 0; k < all_replies.length; k++) {
         if (all_replies[k].parentComment == c.id) {
@@ -330,7 +358,8 @@ exports.formatAllComments = function(allFinalComments) {
 exports.updateVoteForComment = function(data) {
   var query = {
     isUpvote: data.vote,
-    commentId: data.commentId
+    commentId: data.commentId,
+    userId: data.userId
   };
   var next = {
     socialPresence: data.socialPresence,
@@ -341,7 +370,6 @@ exports.updateVoteForComment = function(data) {
   return new Promise(function(resolve, reject) {
     db.updateVoteForComment(query).then(function(commentId) {
       db.getAllComments(next).then(function(comments) {
-
         var final = {
           questionText: data.questionText,
           questionId: data.questionId,

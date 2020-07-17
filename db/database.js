@@ -14,6 +14,7 @@ var Answer = require('./schemas/answer');
 var BigFiveRaw = require('./schemas/bigFiveRaw');
 var Comment = require('./schemas/comment');
 var Vote = require('./schemas/vote');
+var Event = require('./schemas/events');
 var bigFiveQuestions = require('./bigFiveQuestions');
 
 //Function to save the saw big five results to the database
@@ -261,7 +262,7 @@ exports.getAllComments = function(data) {
   return new Promise(function(resolve, reject) {
     Comment.find(query,function(err, result) {
       resolve(result);
-    }).sort({'upVotes' : -1, 'totalVotes': -1, 'order' : 1});
+    }).sort({'upVotes.length' : -1, 'totalVotes': -1, 'order' : 1});
   });
 };
 
@@ -271,14 +272,18 @@ exports.updateVoteForComment = function(data) {
     _id: mongoose.Types.ObjectId(data.commentId)
   };
 
+  var vote = new Event({
+    userId : data.userId,
+    timestamp : data.timestamp
+  });
+
   var newData = {};
 
   if (data.isUpvote){
-    newData = {$inc : {'upVotes' : 1, 'totalVotes': 1}}
+    newData = {$push: {upVotes : vote}, $inc : {'totalVotes': 1}}
   } else {
-    newData = {$inc : {'downVotes' : 1, 'totalVotes' : -1}}
+    newData = {$push: {downVotes : vote}, $inc : {'totalVotes': -1}}
   }
-
   return new Promise(function(resolve, reject) {
     Comment.findOneAndUpdate(query, newData, {
       upsert: true
