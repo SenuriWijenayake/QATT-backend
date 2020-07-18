@@ -279,11 +279,16 @@ exports.updateVoteForComment = function(data) {
 
   var newData = {};
 
-  if (data.isUpvote){
+  if (data.isUpvote & !data.removeVote){
     newData = {$push: {upVotes : vote}, $inc : {'totalVotes': 1}}
-  } else {
+  } else if (!data.isUpvote & !data.removeVote) {
     newData = {$push: {downVotes : vote}, $inc : {'totalVotes': -1}}
+  } else if (data.isUpvote & data.removeVote){
+    newData = {$pull: {upVotes : {userId : data.userId}}, $inc : {'totalVotes': -1}}
+  } else if (!data.isUpvote & data.removeVote){
+    newData = {$pull: {downVotes : {userId : data.userId}}, $inc : {'totalVotes': 1}}
   }
+
   return new Promise(function(resolve, reject) {
     Comment.findOneAndUpdate(query, newData, {
       upsert: true

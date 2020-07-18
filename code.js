@@ -307,11 +307,7 @@ exports.formatAllComments = function(allFinalComments) {
     if (all_comms[j].upVotes.length > 0){
       var upVotes = [];
       for (var x = 0; x < all_comms[j].upVotes.length; x++) {
-        var vote = {
-          userId: all_comms[j].upVotes[x].userId,
-          timestamp: all_comms[j].upVotes[x].timestamp
-        };
-        upVotes.push(vote);
+        upVotes.push(all_comms[j].upVotes[x].userId);
       }
       c.upVotes = upVotes;
     }
@@ -320,11 +316,7 @@ exports.formatAllComments = function(allFinalComments) {
     if (all_comms[j].downVotes.length > 0){
       var downVotes = [];
       for (var y = 0; y < all_comms[j].downVotes.length; y++) {
-        var vote = {
-          userId: all_comms[j].downVotes[y].userId,
-          timestamp: all_comms[j].downVotes[y].timestamp
-        };
-        downVotes.push(vote);
+        downVotes.push(all_comms[j].downVotes[y].userId);
       }
       c.downVotes = downVotes;
     }
@@ -333,6 +325,7 @@ exports.formatAllComments = function(allFinalComments) {
     if (all_comms[j].replies == true) {
       for (var k = 0; k < all_replies.length; k++) {
         if (all_replies[k].parentComment == c.id) {
+
           var r = {
             id: all_replies[k]._id.toString(),
             profilePicture: all_replies[k].userPicture,
@@ -341,10 +334,28 @@ exports.formatAllComments = function(allFinalComments) {
             comment: all_replies[k].text,
             order: all_replies[k].order,
             timestamp: all_replies[k].timestamp,
-            upVotes: all_replies[k].upVotes,
-            downVotes: all_replies[k].downVotes,
+            upVotes: [],
+            downVotes: [],
             replies: []
           };
+
+          // Processing the upvotes of the reply
+          if (all_replies[k].upVotes.length > 0){
+            var upVotes = [];
+            for (var x = 0; x < all_replies[k].upVotes.length; x++) {
+              upVotes.push(all_replies[k].upVotes[x].userId);
+            }
+            r.upVotes = upVotes;
+          }
+
+          // Processing the downvotes of the reply
+          if (all_replies[k].downVotes.length > 0){
+            var downVotes = [];
+            for (var y = 0; y < all_replies[k].downVotes.length; y++) {
+              downVotes.push(all_replies[k].downVotes[y].userId);
+            }
+            r.downVotes = downVotes;
+          }
           c.replies.push(r);
         }
       }
@@ -358,6 +369,7 @@ exports.formatAllComments = function(allFinalComments) {
 exports.updateVoteForComment = function(data) {
   var query = {
     isUpvote: data.vote,
+    removeVote: data.removeVote,
     commentId: data.commentId,
     userId: data.userId
   };
