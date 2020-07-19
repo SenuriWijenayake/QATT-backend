@@ -496,6 +496,15 @@ exports.updateAnswer = function(answer) {
   });
 };
 
+//Function to get a user by ID
+exports.getUserById = function(userId) {
+  return new Promise(function(resolve, reject) {
+    db.getUserById(userId).then(function(user) {
+      resolve(user);
+    });
+  });
+};
+
 //Function to get all votes per question
 exports.getVotesForQuestion = function(query){
   return new Promise(function(resolve, reject) {

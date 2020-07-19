@@ -16,9 +16,17 @@ var appRouter = function(app) {
     res.status(200).send(result);
   });
 
+  //Endpoint to get user by id
+  app.post('/userById', function(req, res) {
+    return new Promise(function(resolve, reject) {
+      logic.getUserById(req.body.userId).then(function(user) {
+        resolve(res.status(200).send(user));
+      });
+    });
+  });
+
   //Endpoint to save user profile data
   app.post('/user', upload.single('profilePicture'), function(req, res) {
-
     console.log("Request received at user data");
     var img = fs.readFileSync(req.file.path);
     req.body.profilePicture = img.toString('base64');
