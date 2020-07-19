@@ -58,12 +58,15 @@ var appRouter = function(app) {
             "email": obj.email,
             "profilePicture": obj.profilePicture,
             "gender": obj.gender,
+            "genderSpecified" : obj.genderSpecified,
             "structure": obj.structure,
             "socialPresence": obj.socialPresence,
             "firstVisit": obj.firstVisit,
             "order": obj.order,
             "completedComments": obj.completedComments,
-            "completedVotes": obj.completedVotes
+            "completedVotes": obj.completedVotes,
+            "completedUES" : obj.completedUES,
+            "code" : obj.code
           };
           resolve(res.status(200).send(result));
         }
