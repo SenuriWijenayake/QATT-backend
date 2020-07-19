@@ -9,13 +9,16 @@ var db = mongoose.connection;
 
 //Importing schemas
 var Result = require('./schemas/result');
+var UESResult = require('./schemas/UESResult');
 var User = require('./schemas/user');
 var Answer = require('./schemas/answer');
 var BigFiveRaw = require('./schemas/bigFiveRaw');
+var UESRaw = require('./schemas/UESRaw');
 var Comment = require('./schemas/comment');
 var Vote = require('./schemas/vote');
 var Event = require('./schemas/events');
 var bigFiveQuestions = require('./bigFiveQuestions');
+var UESQuestions = require('./UESQuestions');
 
 //Function to save the saw big five results to the database
 exports.saveBigFiveRaw = function(userId, results) {
@@ -27,6 +30,19 @@ exports.saveBigFiveRaw = function(userId, results) {
   result.save(function(err) {
     if (err) throw err;
     console.log('Big five raw answers saved successfully!');
+  });
+};
+
+//Function to save the UES raw answers
+exports.saveUESRaw = function(userId, results) {
+  var result = new UESRaw({
+    userId: userId,
+    allAnswers: results
+  });
+
+  result.save(function(err) {
+    if (err) throw err;
+    console.log('UES raw answers saved successfully!');
   });
 };
 
@@ -44,6 +60,23 @@ exports.saveBigFiveResults = function(userId, results) {
   result.save(function(err) {
     if (err) throw err;
     console.log('Results saved successfully!');
+  });
+};
+
+//Function to save the UEs results to the database
+exports.saveUESResults = function(userId, results) {
+  var result = new UESResult({
+    userId: userId,
+    FA: results.FA,
+    PU: results.PU,
+    AE: results.AE,
+    RW: results.RW,
+    total: results.total,
+  });
+
+  result.save(function(err) {
+    if (err) throw err;
+    console.log('UESResults saved successfully!');
   });
 };
 
@@ -195,6 +228,10 @@ exports.updateUser = function(data) {
   } else if (data.type == "completedVotes") {
     newData = {
       completedVotes : data.value
+    }
+  } else if (data.type == "ues"){
+    newData = {
+      completedUES : data.value
     }
   } else {
     newData = {
@@ -452,6 +489,11 @@ exports.updateAnswer = function(answer) {
 //Function to get the big five questions
 exports.getBigFiveQuestions = function() {
   return (bigFiveQuestions);
+};
+
+//Function to get the big five questions
+exports.getUESQuestions = function() {
+  return (UESQuestions);
 };
 
 //Bind connection to error event (to get notification of connection errors)

@@ -200,6 +200,30 @@ var appRouter = function(app) {
     res.status(200).send(data);
   });
 
+  //Endpoint to get the UES questions
+  app.get('/UESQuestions', function(req, res) {
+    data = logic.getUESQuestions();
+    res.status(200).send(data);
+  });
+
+  //Endpoint to process the UES data
+  app.post('/engagementSurvey', function(req, res) {
+    console.log("Request received at engagementSurvey");
+    return new Promise(function(resolve, reject) {
+      var data = {
+        userId: req.body.userId,
+        type: "ues",
+        value: true
+      };
+
+      console.log(data);
+      logic.updateUser(data).then(function(userId) {
+        response = logic.processUESData(req.body);
+        res.status(200).send(response);
+      });
+    });
+  });
+
   //Endpoint to process the big five data
   app.post('/bigFiveData', function(req, res) {
     console.log("Request received at big five");

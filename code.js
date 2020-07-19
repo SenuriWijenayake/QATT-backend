@@ -1,6 +1,7 @@
 //import the data from the database
 var utils = require('./utils');
 var bigVar = require('./db/bigFiveVariables');
+var UESVar = require('./db/UESVariables');
 var db = require('./db/database');
 var shuffle = require('shuffle-array');
 
@@ -120,6 +121,57 @@ exports.getBigFiveQuestions = function() {
   var questions = db.getBigFiveQuestions();
   return (questions);
 };
+
+//Function to get all UES questions
+exports.getUESQuestions = function() {
+  var data = db.getUESQuestions();
+  var order = shuffle([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
+  var questions = [];
+  //Randomise the order of questions
+  for (var i = 0; i < order.length; i++) {
+    data[order[i]].order = i+1;
+    questions.push(data[order[i]]);
+  }
+  return (questions);
+};
+
+//Function to process the UES data and return the big five questions
+exports.processUESData = function(result) {
+
+  var userId = result.userId;
+  delete result["userId"];
+  var answers = result;
+
+  //Save all to the database
+  db.saveUESRaw(userId, answers);
+
+  var allScores = {};
+  var totalScore = 0;
+
+  for (var i = 0; i < UESVar.length; i++) {
+    var trait = UESVar[i].key;
+    var indexes = UESVar[i].values;
+    var score = 0;
+
+    for (var j = 0; j < indexes.length; j++) {
+      if (answers[indexes[j].id]) {
+        var answer = parseInt(answers[indexes[j].id]);
+        if (indexes[j].isReverse) {
+          answer = (5 - answer) + 1;
+        }
+        score = score + answer;
+      }
+    }
+    allScores[trait] = score/3;
+    totalScore += totalScore + score
+  }
+  allScores.total = totalScore/12;
+  db.saveUESResults(userId, allScores);
+
+  var questions = db.getBigFiveQuestions();
+  return (questions);
+};
+
 
 //Function to save user data
 exports.saveUserData = function(user) {

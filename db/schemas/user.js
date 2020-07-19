@@ -20,6 +20,7 @@ var userSchema = new Schema({
   completedVotes : { type : Boolean , "default" : false },
   order: { type : Array , "default" : [] },
   code : {type : String, required: false},
+  completedUES : { type : Boolean , "default" : false },
   paid : { type : Boolean , "default" : false }
 });
 
