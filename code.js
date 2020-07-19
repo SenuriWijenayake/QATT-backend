@@ -163,8 +163,9 @@ exports.processUESData = function(result) {
       }
     }
     allScores[trait] = score/3;
-    totalScore += totalScore + score
+    totalScore += score;
   }
+
   allScores.total = totalScore/12;
   db.saveUESResults(userId, allScores);
 
