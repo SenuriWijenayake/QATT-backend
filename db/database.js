@@ -81,7 +81,7 @@ exports.saveUESResults = function(userId, results) {
 };
 
 //Function to get user by email
-exports.getUserByEmail = function (email){
+exports.getUserByEmail = function(email) {
   var query = {
     email: email
   };
@@ -93,7 +93,7 @@ exports.getUserByEmail = function (email){
 };
 
 //Function to get user by name
-exports.getUserByName = function (name){
+exports.getUserByName = function(name) {
   var query = {
     name: name
   };
@@ -105,7 +105,7 @@ exports.getUserByName = function (name){
 };
 
 //Function to get user by id
-exports.getUserById = function (userId){
+exports.getUserById = function(userId) {
   var query = {
     _id: mongoose.Types.ObjectId(userId)
   };
@@ -117,29 +117,29 @@ exports.getUserById = function (userId){
 };
 
 //Function to get all votes per question
-exports.getVotesForQuestion = function (data){
+exports.getVotesForQuestion = function(data) {
   var query = {
-    questionId : data.questionId,
-    structure : data.structure,
-    socialPresence : data.socialPresence
+    questionId: data.questionId,
+    structure: data.structure,
+    socialPresence: data.socialPresence
   };
   return new Promise(function(resolve, reject) {
-    Vote.find(query, 'userId userName userPicture vote' ,function(err, res) {
+    Vote.find(query, 'userId userName userPicture vote', function(err, res) {
       resolve(res);
     });
   });
 };
 
 //Function to get all questions answered by user
-exports.getAnswersByUser = function (userId){
+exports.getAnswersByUser = function(userId) {
   var query = {
     userId: userId
   };
   return new Promise(function(resolve, reject) {
-    Answer.find(query, 'questionId' ,function(err, res) {
+    Answer.find(query, 'questionId', function(err, res) {
       var arr = [];
       for (var i = 0; i < res.length; i++) {
-       arr.push(res[i].questionId);
+        arr.push(res[i].questionId);
       }
       resolve(arr);
     });
@@ -148,15 +148,15 @@ exports.getAnswersByUser = function (userId){
 
 
 //Function to get all questions voted by a user
-exports.getVotesByUser = function (userId){
+exports.getVotesByUser = function(userId) {
   var query = {
     userId: userId
   };
   return new Promise(function(resolve, reject) {
-    Vote.find(query, 'questionId' ,function(err, res) {
+    Vote.find(query, 'questionId', function(err, res) {
       var arr = [];
       for (var i = 0; i < res.length; i++) {
-       arr.push(res[i].questionId);
+        arr.push(res[i].questionId);
       }
       resolve(arr);
     });
@@ -164,14 +164,14 @@ exports.getVotesByUser = function (userId){
 };
 
 //Function to get all comments per question
-exports.getCommentsForQuestion = function (data){
+exports.getCommentsForQuestion = function(data) {
   var query = {
     socialPresence: data.socialPresence,
     structure: data.structure,
     questionId: data.questionId
   };
   return new Promise(function(resolve, reject) {
-    Comment.find(query ,function(err, res) {
+    Comment.find(query, function(err, res) {
       resolve(res);
     });
   });
@@ -192,7 +192,7 @@ exports.saveUser = function(user) {
       structure: user.structure,
       socialPresence: user.socialPresence,
       profilePicture: user.profilePicture,
-      order : user.order
+      order: user.order
     });
 
     newUser.save(function(err, newUser) {
@@ -210,13 +210,12 @@ exports.loginUser = function(user) {
   };
   return new Promise(function(resolve, reject) {
     User.findOne(query, function(err, result) {
-      if (result == null){
-        resolve (-1);
-      } else if (result.password == password){
+      if (result == null) {
+        resolve(-1);
+      } else if (result.password == password) {
         resolve(result);
-      }
-      else{
-        resolve (-2);
+      } else {
+        resolve(-2);
       }
     });
   });
@@ -229,25 +228,25 @@ exports.updateUser = function(data) {
     _id: mongoose.Types.ObjectId(data.userId)
   };
 
-  if (data.type == "firstVisit"){
+  if (data.type == "firstVisit") {
     newData = {
-      firstVisit : data.value
+      firstVisit: data.value
     }
   } else if (data.type == "completedComments") {
     newData = {
-      completedComments : data.value
+      completedComments: data.value
     }
   } else if (data.type == "completedVotes") {
     newData = {
-      completedVotes : data.value
+      completedVotes: data.value
     }
-  } else if (data.type == "ues"){
+  } else if (data.type == "ues") {
     newData = {
-      completedUES : data.value
+      completedUES: data.value
     }
   } else {
     newData = {
-      code : data.value
+      code: data.value
     }
   }
 
@@ -270,7 +269,9 @@ exports.getGroupUsers = function(data) {
   var query = {
     socialPresence: data.socialPresence,
     structure: data.structure,
-    _id: {$ne : mongoose.Types.ObjectId(thisUser)}
+    _id: {
+      $ne: mongoose.Types.ObjectId(thisUser)
+    }
   };
   return new Promise(function(resolve, reject) {
     User.find(query, 'name gender age profilePicture', function(err, result) {
@@ -290,9 +291,9 @@ exports.getAllGroupUsers = function(data) {
       var final = [];
       for (var i = 0; i < result.length; i++) {
         var obj = {
-          userId : result[i]._id.toString(),
-          name : result[i].name,
-          profilePicture : result[i].profilePicture
+          userId: result[i]._id.toString(),
+          name: result[i].name,
+          profilePicture: result[i].profilePicture
         };
         final.push(obj);
       }
@@ -306,12 +307,16 @@ exports.getAllComments = function(data) {
   var query = {
     socialPresence: data.socialPresence,
     structure: data.structure,
-    questionId : data.questionId
+    questionId: data.questionId
   };
   return new Promise(function(resolve, reject) {
-    Comment.find(query,function(err, result) {
+    Comment.find(query, function(err, result) {
       resolve(result);
-    }).sort({'upVotes.length' : -1, 'totalVotes': -1, 'order' : 1});
+    }).sort({
+      'upVotes.length': -1,
+      'totalVotes': -1,
+      'order': 1
+    });
   });
 };
 
@@ -322,20 +327,52 @@ exports.updateVoteForComment = function(data) {
   };
 
   var vote = new Event({
-    userId : data.userId,
-    timestamp : data.timestamp
+    userId: data.userId,
+    timestamp: data.timestamp
   });
 
   var newData = {};
 
-  if (data.isUpvote & !data.removeVote){
-    newData = {$push: {upVotes : vote}, $inc : {'totalVotes': 1}}
+  if (data.isUpvote & !data.removeVote) {
+    newData = {
+      $push: {
+        upVotes: vote
+      },
+      $inc: {
+        'totalVotes': 1
+      }
+    }
   } else if (!data.isUpvote & !data.removeVote) {
-    newData = {$push: {downVotes : vote}, $inc : {'totalVotes': -1}}
-  } else if (data.isUpvote & data.removeVote){
-    newData = {$pull: {upVotes : {userId : data.userId}}, $inc : {'totalVotes': -1}}
-  } else if (!data.isUpvote & data.removeVote){
-    newData = {$pull: {downVotes : {userId : data.userId}}, $inc : {'totalVotes': 1}}
+    newData = {
+      $push: {
+        downVotes: vote
+      },
+      $inc: {
+        'totalVotes': -1
+      }
+    }
+  } else if (data.isUpvote & data.removeVote) {
+    newData = {
+      $pull: {
+        upVotes: {
+          userId: data.userId
+        }
+      },
+      $inc: {
+        'totalVotes': -1
+      }
+    }
+  } else if (!data.isUpvote & data.removeVote) {
+    newData = {
+      $pull: {
+        downVotes: {
+          userId: data.userId
+        }
+      },
+      $inc: {
+        'totalVotes': 1
+      }
+    }
   }
 
   return new Promise(function(resolve, reject) {
@@ -356,7 +393,7 @@ exports.updateParentCommentById = function(parent) {
   };
 
   var newData = {
-    replies : true
+    replies: true
   };
 
   return new Promise(function(resolve, reject) {
@@ -370,9 +407,21 @@ exports.updateParentCommentById = function(parent) {
 };
 
 //Function to find all comment counts
-exports.getAllCommentCounts = function() {
+exports.getAllCommentCounts = function(query) {
   return new Promise(function(resolve, reject) {
-    Comment.aggregate([{ $group:{ _id : "$questionId" ,count: { $sum: 1 }}}], function(err, result){
+    Comment.aggregate([{
+      $match: {
+        socialPresence: query.socialPresence,
+        structure: query.structure
+      }
+    }, {
+      $group: {
+        _id: "$questionId",
+        count: {
+          $sum: 1
+        }
+      }
+    }], function(err, result) {
       resolve(result);
     });
   });
@@ -382,7 +431,14 @@ exports.getAllCommentCounts = function() {
 //Function to find all vote counts
 exports.getAllVoteCounts = function() {
   return new Promise(function(resolve, reject) {
-    Vote.aggregate([{ $group:{ _id : "$questionId" ,count: { $sum: 1 }}}], function(err, result){
+    Vote.aggregate([{
+      $group: {
+        _id: "$questionId",
+        count: {
+          $sum: 1
+        }
+      }
+    }], function(err, result) {
       resolve(result);
     });
   });
@@ -396,9 +452,9 @@ exports.saveAnswer = function(answer) {
       questionId: answer.questionId,
       oldAnswer: answer.oldAnswer,
       oldConfidence: answer.oldConfidence,
-      oldComment : answer.oldComment,
-      socialPresence : answer.socialPresence,
-      structure : answer.structure
+      oldComment: answer.oldComment,
+      socialPresence: answer.socialPresence,
+      structure: answer.structure
     });
 
     newAnswer.save(function(err, newAnswer) {
@@ -414,7 +470,7 @@ exports.saveVote = function(answer) {
     var newVote = new Vote({
       userId: answer.userId,
       userName: answer.userName,
-      userPicture : answer.userPicture,
+      userPicture: answer.userPicture,
       questionId: answer.questionId,
       socialPresence: answer.socialPresence,
       structure: answer.structure,
@@ -432,30 +488,30 @@ exports.saveVote = function(answer) {
 exports.saveComment = function(comment) {
   return new Promise(function(resolve, reject) {
     var newComment = new Comment({
-      userId : comment.userId,
-      userPicture : comment.userPicture,
-      userName : comment.userName,
-      questionId : comment.questionId,
-      socialPresence : comment.socialPresence,
-      structure : comment.structure,
-      text : comment.text,
-      order : comment.order,
-      isReply : comment.isReply,
-      parentComment : comment.parentComment
+      userId: comment.userId,
+      userPicture: comment.userPicture,
+      userName: comment.userName,
+      questionId: comment.questionId,
+      socialPresence: comment.socialPresence,
+      structure: comment.structure,
+      text: comment.text,
+      order: comment.order,
+      isReply: comment.isReply,
+      parentComment: comment.parentComment
     });
 
     newComment.save(function(err, nC) {
       if (err) reject(err);
       //If a reply, update parent
-      if (comment.isReply == true){
+      if (comment.isReply == true) {
         var parentComment = comment.parentComment;
-        exports.updateParentCommentById(parentComment).then(function(){
+        exports.updateParentCommentById(parentComment).then(function() {
           var data = {};
           data.socialPresence = newComment.socialPresence;
           data.structure = newComment.structure;
           data.questionId = newComment.questionId;
 
-          exports.getAllComments(data).then(function(allFinalComments){
+          exports.getAllComments(data).then(function(allFinalComments) {
             resolve(allFinalComments)
           });
         });
@@ -465,7 +521,7 @@ exports.saveComment = function(comment) {
         data.structure = newComment.structure;
         data.questionId = newComment.questionId;
 
-        exports.getAllComments(data).then(function(allFinalComments){
+        exports.getAllComments(data).then(function(allFinalComments) {
           resolve(allFinalComments)
         });
       }

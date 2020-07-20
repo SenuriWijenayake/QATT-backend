@@ -55,8 +55,6 @@ var appRouter = function(app) {
     } else {
       delete req.body.profilePicture;
     }
-    console.log(req.body);
-
     return new Promise(function(resolve, reject) {
       logic.saveUserData(req.body).then(function(obj) {
         if (obj == -1) {

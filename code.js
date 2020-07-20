@@ -13,8 +13,13 @@ exports.getAllQuestions = function(data) {
   var questions = utils.questions;
   var newArr = [];
 
+  var query = {
+    socialPresence : data.socialPresence,
+    structure : data.structure
+  };
+
   return new Promise(function(resolve, reject) {
-    db.getAllCommentCounts().then(function(counts) {
+    db.getAllCommentCounts(query).then(function(counts) {
       db.getAnswersByUser(userId).then(function(answeredQs) {
         for (var i = 0; i < order.length; i++) {
           var qId = order[i].toString();
