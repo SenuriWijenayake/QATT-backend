@@ -51,10 +51,15 @@ exports.getAllQuestionsToVote = function(data) {
   var order = data.order;
   var userId = data.userId;
   var questions = utils.questions;
+
+  var query = {
+    socialPresence : data.socialPresence,
+    structure : data.structure
+  };
   var newArr = [];
 
   return new Promise(function(resolve, reject) {
-    db.getAllVoteCounts().then(function(counts) {
+    db.getAllVoteCounts(query).then(function(counts) {
       db.getVotesByUser(userId).then(function(votedQs) {
         for (var i = 0; i < order.length; i++) {
           var qId = order[i].toString();

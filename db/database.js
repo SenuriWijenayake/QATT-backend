@@ -429,9 +429,14 @@ exports.getAllCommentCounts = function(query) {
 
 
 //Function to find all vote counts
-exports.getAllVoteCounts = function() {
+exports.getAllVoteCounts = function(query) {
   return new Promise(function(resolve, reject) {
     Vote.aggregate([{
+      $match: {
+        socialPresence: query.socialPresence,
+        structure: query.structure
+      }
+    }, {
       $group: {
         _id: "$questionId",
         count: {
