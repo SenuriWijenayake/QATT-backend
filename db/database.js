@@ -92,6 +92,18 @@ exports.getUserByEmail = function (email){
   });
 };
 
+//Function to get user by name
+exports.getUserByName = function (name){
+  var query = {
+    name: name
+  };
+  return new Promise(function(resolve, reject) {
+    User.findOne(query, function(err, user) {
+      resolve(user);
+    });
+  });
+};
+
 //Function to get user by id
 exports.getUserById = function (userId){
   var query = {

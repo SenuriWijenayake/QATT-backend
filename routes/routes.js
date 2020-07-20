@@ -25,11 +25,37 @@ var appRouter = function(app) {
     });
   });
 
+  //Endpoint to check username`available
+  app.post('/username', function(req, res) {
+    console.log("Request received at username");
+    return new Promise(function(resolve, reject) {
+      logic.checkUsername(req.body.name).then(function(result) {
+        resolve(res.status(200).send(result));
+      });
+    });
+  });
+
+  //Endpoint to check email`available
+  app.post('/email', function(req, res) {
+    console.log("Request received at email");
+    return new Promise(function(resolve, reject) {
+      logic.checkEmail(req.body.email).then(function(result) {
+        resolve(res.status(200).send(result));
+      });
+    });
+  });
+
+
   //Endpoint to save user profile data
   app.post('/user', upload.single('profilePicture'), function(req, res) {
     console.log("Request received at user data");
-    var img = fs.readFileSync(req.file.path);
-    req.body.profilePicture = img.toString('base64');
+    if (req.body.socialPresence == "true"){
+      var img = fs.readFileSync(req.file.path);
+      req.body.profilePicture = img.toString('base64');
+    } else {
+      delete req.body.profilePicture;
+    }
+    console.log(req.body);
 
     return new Promise(function(resolve, reject) {
       logic.saveUserData(req.body).then(function(obj) {

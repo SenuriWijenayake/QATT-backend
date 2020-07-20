@@ -189,12 +189,14 @@ exports.saveUserData = function(user) {
             "userId": user._id.toString(),
             "name": user.name,
             "email": user.email,
-            "profilePicture": user.profilePicture,
             "gender": user.gender,
             "structure": user.structure,
             "socialPresence": user.socialPresence,
             "order": user.order
           };
+          if (user.profilePicture){
+            obj.profilePicture = user.profilePicture
+          }
           resolve(obj);
         });
       }
@@ -251,6 +253,32 @@ exports.getGroupUsers = function(query) {
   return new Promise(function(resolve, reject) {
     db.getGroupUsers(query).then(function(users) {
       resolve(users);
+    });
+  });
+};
+
+//Function to check username validity
+exports.checkUsername = function(name) {
+  return new Promise(function(resolve, reject) {
+    db.getUserByName(name).then(function(users) {
+      if (users){
+        resolve(false);
+      } else {
+        resolve(true);
+      }
+    });
+  });
+};
+
+//Function to check email validity
+exports.checkEmail = function(email) {
+  return new Promise(function(resolve, reject) {
+    db.getUserByEmail(email).then(function(users) {
+      if (users){
+        resolve(false);
+      } else {
+        resolve(true);
+      }
     });
   });
 };
