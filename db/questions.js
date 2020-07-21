@@ -26,7 +26,7 @@ module.exports = [
   },
   {
     "questionNumber": "6",
-    "text": "Has religion been a good thing for Humanity?",
+    "text": "Has religion been a good thing for humanity?",
     "type": "Religion"
   },
   {
