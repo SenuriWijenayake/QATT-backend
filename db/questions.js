@@ -71,7 +71,7 @@ module.exports = [
   },
   {
     "questionNumber": "15",
-    "text": "Do electronic devices hurt or help children’s development?",
+    "text": "Do electronic devices help children’s development?",
     "type": "Social Media"
   },
   {
