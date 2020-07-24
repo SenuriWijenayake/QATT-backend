@@ -11,6 +11,7 @@ var commentSchema = new Schema({
   structure : Boolean,
   timestamp : { type : Date, default: Date.now },
   order : Number,
+  isAgree : { type : Boolean , required: false },
   text : String,
   replies : { type : Boolean , required: false, "default" : false },
   isReply : { type : Boolean , "default" : false },
