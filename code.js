@@ -309,7 +309,7 @@ exports.saveAnswer = function(answer) {
     db.saveAnswer(ans).then(function(answerId) {
       var type;
       if (answer.structure) {
-        type = (answer.oldAnswer == "yes") ? true :false;
+        type = (answer.oldAnswer == "yes") ? true : false;
       }
       var comment = {
         userId: answer.userId,
@@ -332,7 +332,6 @@ exports.saveAnswer = function(answer) {
 //Function to save a comment or a reply
 exports.saveComment = function(comment) {
   return new Promise(function(resolve, reject) {
-
     var data = {};
     data.socialPresence = comment.socialPresence;
     data.structure = comment.structure;
@@ -364,11 +363,19 @@ exports.saveComment = function(comment) {
             comments: []
           };
           if (comment.structure) {
-            final.comments = exports.structureAllComments(allFinalComments);
+            var query = {
+              socialPresence: comment.socialPresence,
+              structure: comment.structure,
+              questionId: comment.questionId
+            };
+            exports.structureAllComments(allFinalComments, query).then(function (res){
+              final.comments = res;
+              resolve(final);
+            })
           } else {
             final.comments = exports.formatAllComments(allFinalComments);
+            resolve(final);
           }
-          resolve(final);
         });
       });
     });
@@ -376,20 +383,20 @@ exports.saveComment = function(comment) {
 };
 
 //Function to format comments to with the structured format
-exports.structureAllComments = function(allFinalComments) {
+exports.structureAllComments = function(allFinalComments, query) {
   //Filter comments and replies into two groups based on isAgree
   var final = {
-    yes : [],
-    no : [],
-    progressY : 0,
-    progressN : 0
+    yes: [],
+    no: [],
+    progressY: 0,
+    progressN: 0
   };
 
   var yesComments = [];
   var noComments = [];
 
   for (var i = 0; i < allFinalComments.length; i++) {
-    if (allFinalComments[i].isAgree == true){
+    if (allFinalComments[i].isAgree == true) {
       yesComments.push(allFinalComments[i]);
     } else {
       noComments.push(allFinalComments[i]);
@@ -398,9 +405,25 @@ exports.structureAllComments = function(allFinalComments) {
 
   final.yes = exports.formatAllComments(yesComments);
   final.no = exports.formatAllComments(noComments);
-  final.progressY = Math.round(final.yes.length / (final.yes.length + final.no.length) * 100)
-  final.progressN = Math.round(final.no.length / (final.yes.length + final.no.length) * 100)
-  return (final);
+
+  return new Promise(function(resolve, reject) {
+    db.getInitialAnswersForQuestion(query).then(function(counts) {
+      var yesCount = 0;
+      var noCount = 0;
+
+      for (var j = 0; j < counts.length; j++) {
+        if (counts[j]._id == "yes") {
+          yesCount = counts[j].count;
+        } else {
+          noCount = counts[j].count;
+        }
+      }
+      final.progressY = Math.round(yesCount / (yesCount + noCount) * 100);
+      final.progressN = Math.round(noCount / (yesCount + noCount) * 100);
+
+      resolve (final);
+    });
+  });
 };
 
 //Function to format comments for view
@@ -518,13 +541,20 @@ exports.updateVoteForComment = function(data) {
           structure: data.structure,
           comments: []
         };
-
         if (data.structure) {
-          final.comments = exports.structureAllComments(comments);
+          var q = {
+            socialPresence: data.socialPresence,
+            structure: data.structure,
+            questionId: data.questionId
+          };
+          exports.structureAllComments(comments, q).then(function(res) {
+            final.comments = res;
+            resolve(final);
+          });
         } else {
           final.comments = exports.formatAllComments(comments);
+          resolve(final);
         }
-        resolve(final);
       });
     });
   });
@@ -542,11 +572,19 @@ exports.getCommentsForQuestion = function(data) {
   return new Promise(function(resolve, reject) {
     db.getAllComments(data).then(function(comments) {
       if (data.structure) {
-        final.comments = exports.structureAllComments(comments);
+        var query = {
+          socialPresence: data.socialPresence,
+          structure: data.structure,
+          questionId: data.questionId
+        };
+        exports.structureAllComments(comments, query).then(function(res) {
+          final.comments = res;
+          resolve(final);
+        });
       } else {
         final.comments = exports.formatAllComments(comments);
+        resolve(final);
       }
-      resolve(final);
     });
   });
 };

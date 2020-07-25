@@ -428,6 +428,29 @@ exports.getAllCommentCounts = function(query) {
 };
 
 
+//Funtion to find all answers for the question
+exports.getInitialAnswersForQuestion = function(query) {
+  return new Promise(function(resolve, reject) {
+    Answer.aggregate([{
+      $match: {
+        socialPresence: query.socialPresence,
+        structure: query.structure,
+        questionId: query.questionId
+      }
+    }, {
+      $group: {
+        _id: "$oldAnswer",
+        count: {
+          $sum: 1
+        }
+      }
+    }], function(err, result) {
+      resolve(result);
+    });
+  });
+};
+
+
 //Function to find all vote counts
 exports.getAllVoteCounts = function(query) {
   return new Promise(function(resolve, reject) {
