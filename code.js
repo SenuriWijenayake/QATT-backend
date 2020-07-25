@@ -14,8 +14,8 @@ exports.getAllQuestions = function(data) {
   var newArr = [];
 
   var query = {
-    socialPresence : data.socialPresence,
-    structure : data.structure
+    socialPresence: data.socialPresence,
+    structure: data.structure
   };
 
   return new Promise(function(resolve, reject) {
@@ -53,8 +53,8 @@ exports.getAllQuestionsToVote = function(data) {
   var questions = utils.questions;
 
   var query = {
-    socialPresence : data.socialPresence,
-    structure : data.structure
+    socialPresence: data.socialPresence,
+    structure: data.structure
   };
   var newArr = [];
 
@@ -139,7 +139,7 @@ exports.getUESQuestions = function() {
   var questions = [];
   //Randomise the order of questions
   for (var i = 0; i < order.length; i++) {
-    data[order[i]].order = i+1;
+    data[order[i]].order = i + 1;
     questions.push(data[order[i]]);
   }
   return (questions);
@@ -172,11 +172,11 @@ exports.processUESData = function(result) {
         score = score + answer;
       }
     }
-    allScores[trait] = score/3;
+    allScores[trait] = score / 3;
     totalScore += score;
   }
 
-  allScores.total = totalScore/12;
+  allScores.total = totalScore / 12;
   db.saveUESResults(userId, allScores);
 
   var questions = db.getBigFiveQuestions();
@@ -204,7 +204,7 @@ exports.saveUserData = function(user) {
             "socialPresence": user.socialPresence,
             "order": user.order
           };
-          if (user.profilePicture){
+          if (user.profilePicture) {
             obj.profilePicture = user.profilePicture
           }
           resolve(obj);
@@ -271,7 +271,7 @@ exports.getGroupUsers = function(query) {
 exports.checkUsername = function(name) {
   return new Promise(function(resolve, reject) {
     db.getUserByName(name).then(function(users) {
-      if (users){
+      if (users) {
         resolve(false);
       } else {
         resolve(true);
@@ -284,7 +284,7 @@ exports.checkUsername = function(name) {
 exports.checkEmail = function(email) {
   return new Promise(function(resolve, reject) {
     db.getUserByEmail(email).then(function(users) {
-      if (users){
+      if (users) {
         resolve(false);
       } else {
         resolve(true);
@@ -307,6 +307,10 @@ exports.saveAnswer = function(answer) {
     ans.oldComment = answer.oldComment;
 
     db.saveAnswer(ans).then(function(answerId) {
+      var type;
+      if (answer.structure) {
+        type = (answer.oldAnswer == "yes") ? true :false;
+      }
       var comment = {
         userId: answer.userId,
         questionId: answer.questionId,
@@ -315,7 +319,8 @@ exports.saveAnswer = function(answer) {
         socialPresence: answer.socialPresence,
         structure: answer.structure,
         userName: answer.userName,
-        isReply: answer.isReply
+        isReply: answer.isReply,
+        isAgree: type
       };
       exports.saveComment(comment).then(function(result) {
         resolve(result);
@@ -348,6 +353,7 @@ exports.saveComment = function(comment) {
         comm.order = allComments.length + 1;
         comm.isReply = comment.isReply;
         comm.parentComment = comment.parentComment;
+        comm.isAgree = comment.isAgree;
 
         db.saveComment(comm).then(function(allFinalComments) {
           var final = {
@@ -357,12 +363,44 @@ exports.saveComment = function(comment) {
             structure: comment.structure,
             comments: []
           };
-          final.comments = exports.formatAllComments(allFinalComments);
+          if (comment.structure) {
+            final.comments = exports.structureAllComments(allFinalComments);
+          } else {
+            final.comments = exports.formatAllComments(allFinalComments);
+          }
           resolve(final);
         });
       });
     });
   });
+};
+
+//Function to format comments to with the structured format
+exports.structureAllComments = function(allFinalComments) {
+  //Filter comments and replies into two groups based on isAgree
+  var final = {
+    yes : [],
+    no : [],
+    progressY : 0,
+    progressN : 0
+  };
+
+  var yesComments = [];
+  var noComments = [];
+
+  for (var i = 0; i < allFinalComments.length; i++) {
+    if (allFinalComments[i].isAgree == true){
+      yesComments.push(allFinalComments[i]);
+    } else {
+      noComments.push(allFinalComments[i]);
+    }
+  }
+
+  final.yes = exports.formatAllComments(yesComments);
+  final.no = exports.formatAllComments(noComments);
+  final.progressY = Math.round(final.yes.length / (final.yes.length + final.no.length) * 100)
+  final.progressN = Math.round(final.no.length / (final.yes.length + final.no.length) * 100)
+  return (final);
 };
 
 //Function to format comments for view
@@ -395,7 +433,7 @@ exports.formatAllComments = function(allFinalComments) {
     };
 
     // Processing the upvotes
-    if (all_comms[j].upVotes.length > 0){
+    if (all_comms[j].upVotes.length > 0) {
       var upVotes = [];
       for (var x = 0; x < all_comms[j].upVotes.length; x++) {
         upVotes.push(all_comms[j].upVotes[x].userId);
@@ -404,7 +442,7 @@ exports.formatAllComments = function(allFinalComments) {
     }
 
     // Processing the downvotes
-    if (all_comms[j].downVotes.length > 0){
+    if (all_comms[j].downVotes.length > 0) {
       var downVotes = [];
       for (var y = 0; y < all_comms[j].downVotes.length; y++) {
         downVotes.push(all_comms[j].downVotes[y].userId);
@@ -431,7 +469,7 @@ exports.formatAllComments = function(allFinalComments) {
           };
 
           // Processing the upvotes of the reply
-          if (all_replies[k].upVotes.length > 0){
+          if (all_replies[k].upVotes.length > 0) {
             var upVotes = [];
             for (var x = 0; x < all_replies[k].upVotes.length; x++) {
               upVotes.push(all_replies[k].upVotes[x].userId);
@@ -440,7 +478,7 @@ exports.formatAllComments = function(allFinalComments) {
           }
 
           // Processing the downvotes of the reply
-          if (all_replies[k].downVotes.length > 0){
+          if (all_replies[k].downVotes.length > 0) {
             var downVotes = [];
             for (var y = 0; y < all_replies[k].downVotes.length; y++) {
               downVotes.push(all_replies[k].downVotes[y].userId);
@@ -481,7 +519,11 @@ exports.updateVoteForComment = function(data) {
           comments: []
         };
 
-        final.comments = exports.formatAllComments(comments);
+        if (data.structure) {
+          final.comments = exports.structureAllComments(comments);
+        } else {
+          final.comments = exports.formatAllComments(comments);
+        }
         resolve(final);
       });
     });
@@ -499,7 +541,11 @@ exports.getCommentsForQuestion = function(data) {
   }
   return new Promise(function(resolve, reject) {
     db.getAllComments(data).then(function(comments) {
-      final.comments = exports.formatAllComments(comments);
+      if (data.structure) {
+        final.comments = exports.structureAllComments(comments);
+      } else {
+        final.comments = exports.formatAllComments(comments);
+      }
       resolve(final);
     });
   });
@@ -520,7 +566,7 @@ exports.updateAnswer = function(answer) {
         var vote = {
           userId: answer.userId,
           userName: answer.userName,
-          userPicture : user.profilePicture,
+          userPicture: user.profilePicture,
           questionId: answer.questionId,
           socialPresence: answer.socialPresence,
           structure: answer.structure,
@@ -544,20 +590,20 @@ exports.getUserById = function(userId) {
 };
 
 //Function to get all votes per question
-exports.getVotesForQuestion = function(query){
+exports.getVotesForQuestion = function(query) {
   return new Promise(function(resolve, reject) {
     db.getVotesForQuestion(query).then(function(votes) {
 
-      db.getAllGroupUsers(query).then(function(users){
+      db.getAllGroupUsers(query).then(function(users) {
         var finalVotes = [];
         var votedUsers = [];
 
         //For those who have voted
         for (var i = 0; i < votes.length; i++) {
           var obj = {
-            userName : votes[i].userName,
-            userPicture : votes[i].userPicture,
-            vote : votes[i].vote
+            userName: votes[i].userName,
+            userPicture: votes[i].userPicture,
+            vote: votes[i].vote
           }
           votedUsers.push(votes[i].userId);
           finalVotes.push(obj);
@@ -565,20 +611,20 @@ exports.getVotesForQuestion = function(query){
 
         //For those who have not voted
         for (var j = 0; j < users.length; j++) {
-         if (!votedUsers.includes(users[j].userId)) {
-           var obj = {
-             userName : users[j].name,
-             userPicture : users[j].profilePicture,
-             vote : 'not-attempted'
-           }
-           finalVotes.push(obj);
-         }
+          if (!votedUsers.includes(users[j].userId)) {
+            var obj = {
+              userName: users[j].name,
+              userPicture: users[j].profilePicture,
+              vote: 'not-attempted'
+            }
+            finalVotes.push(obj);
+          }
         }
 
         //Preparing the final response
         var final = {
-          questionText : query.questionText,
-          votes : finalVotes
+          questionText: query.questionText,
+          votes: finalVotes
         };
         resolve(final);
       });

@@ -502,7 +502,8 @@ exports.saveComment = function(comment) {
       text: comment.text,
       order: comment.order,
       isReply: comment.isReply,
-      parentComment: comment.parentComment
+      parentComment: comment.parentComment,
+      isAgree: comment.isAgree
     });
 
     newComment.save(function(err, nC) {
