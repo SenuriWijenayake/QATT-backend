@@ -304,18 +304,29 @@ exports.getAllGroupUsers = function(data) {
 
 //Function to find all comments for a question in group
 exports.getAllComments = function(data) {
-  var query = {
-    socialPresence: data.socialPresence,
-    structure: data.structure,
-    questionId: data.questionId
-  };
   return new Promise(function(resolve, reject) {
-    Comment.find(query, function(err, result) {
+    Comment.aggregate([{
+        $match: {
+          socialPresence: data.socialPresence,
+          structure: data.structure,
+          questionId: data.questionId
+        }
+      },
+      {
+        $addFields: {
+          upCount: {
+            $size: '$upVotes'
+          }
+        }
+      },
+      {
+        $sort: {
+          upCount: -1,
+          totalVotes: -1
+        }
+      }
+    ], function(err, result) {
       resolve(result);
-    }).sort({
-      'upVotes.length': -1,
-      'totalVotes': -1,
-      'order': 1
     });
   });
 };
