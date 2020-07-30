@@ -669,3 +669,13 @@ exports.getVotesForQuestion = function(query) {
     });
   });
 };
+
+
+//Function to update user sesstion
+exports.updateSession = function(data){
+  return new Promise(function(resolve, reject) {
+    db.updateSession(data).then(function(user) {
+      resolve(user);
+    });
+  });
+};

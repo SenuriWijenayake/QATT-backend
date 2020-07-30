@@ -1,7 +1,7 @@
 //Import the mongoose module
 var mongoose = require('mongoose');
 // var mongoDB = 'mongodb://admin:admin1234@ds135680.mlab.com:35680/qa';
-var mongoDB = 'mongodb://localhost:27017/study8';
+var mongoDB = 'mongodb://localhost:27017/study5';
 
 mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
@@ -260,6 +260,26 @@ exports.updateUser = function(data) {
     });
   });
 
+};
+
+//Update user sessions
+exports.updateSession = function(data) {
+  var query = {
+    _id: mongoose.Types.ObjectId(data.userId)
+  };
+  var newData = {
+    $push: {
+      sessions: { start : data.startTime, end: data.endTime }
+    }
+  };
+  return new Promise(function(resolve, reject) {
+    User.findOneAndUpdate(query, newData, {
+      upsert: false
+    }, function(err, newAnswer) {
+      if (err) reject(err);
+      resolve(newAnswer._id.toString());
+    });
+  });
 };
 
 

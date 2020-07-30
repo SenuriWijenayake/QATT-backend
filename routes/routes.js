@@ -16,6 +16,15 @@ var appRouter = function(app) {
     res.status(200).send(result);
   });
 
+  //Endpoint to update user session
+  app.post('/updateUserSession', function(req, res) {
+    return new Promise(function(resolve, reject) {
+      logic.updateSession(req.body).then(function(user) {
+        resolve(res.status(200).send());
+      });
+    });
+  });
+
   //Endpoint to get user by id
   app.post('/userById', function(req, res) {
     return new Promise(function(resolve, reject) {

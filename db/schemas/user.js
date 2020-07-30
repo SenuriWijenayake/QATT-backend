@@ -22,7 +22,8 @@ var userSchema = new Schema({
   code : {type : String, required: false},
   completedUES : { type : Boolean , "default" : false },
   paid : { type : Boolean , "default" : false },
-  ethnicity: String
+  ethnicity: String,
+  sessions : { type : Array , "default" : [] }
 });
 
 var User = mongoose.model('User', userSchema);
