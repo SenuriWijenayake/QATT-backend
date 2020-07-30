@@ -21,7 +21,8 @@ var userSchema = new Schema({
   order: { type : Array , "default" : [] },
   code : {type : String, required: false},
   completedUES : { type : Boolean , "default" : false },
-  paid : { type : Boolean , "default" : false }
+  paid : { type : Boolean , "default" : false },
+  ethnicity: String
 });
 
 var User = mongoose.model('User', userSchema);
