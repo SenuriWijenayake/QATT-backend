@@ -58,7 +58,7 @@ var appRouter = function(app) {
   //Endpoint to save user profile data
   app.post('/user', upload.single('profilePicture'), function(req, res) {
     console.log("Request received at user data");
-    if (req.body.socialPresence == "true"){
+    if (req.body.socialPresence == "true") {
       var img = fs.readFileSync(req.file.path);
       req.body.profilePicture = img.toString('base64');
     } else {
@@ -91,18 +91,20 @@ var appRouter = function(app) {
             "email": obj.email,
             "profilePicture": obj.profilePicture,
             "gender": obj.gender,
-            "genderSpecified" : obj.genderSpecified,
+            "genderSpecified": obj.genderSpecified,
             "structure": obj.structure,
             "socialPresence": obj.socialPresence,
             "firstVisit": obj.firstVisit,
             "order": obj.order,
             "completedComments": obj.completedComments,
             "completedVotes": obj.completedVotes,
-            "completedUES" : obj.completedUES,
-            "code" : obj.code
+            "completedUES": obj.completedUES,
+            "code": obj.code,
+            "sessionId" : obj.sessionId,
+            "startTime" : obj.startTime
           };
           resolve(res.status(200).send(result));
-        }
+        };
       });
     });
   });

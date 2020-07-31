@@ -24,7 +24,6 @@ exports.getAllQuestions = function(data) {
         for (var i = 0; i < order.length; i++) {
           var qId = order[i].toString();
           var commCount = 0;
-
           if (answeredQs.includes(qId)) {
             questions[order[i] - 1].attempted = true;
           } else {
@@ -192,7 +191,7 @@ exports.saveUserData = function(user) {
       if (result) {
         resolve(-1);
       } else {
-        var order = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]);
+        var order = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
         user.order = order;
         db.saveUser(user).then(function(user) {
           var obj = {

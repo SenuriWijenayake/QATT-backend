@@ -17,6 +17,7 @@ var UESRaw = require('./schemas/UESRaw');
 var Comment = require('./schemas/comment');
 var Vote = require('./schemas/vote');
 var Event = require('./schemas/events');
+var Session = require('./schemas/session');
 var bigFiveQuestions = require('./bigFiveQuestions');
 var UESQuestions = require('./UESQuestions');
 
@@ -214,7 +215,16 @@ exports.loginUser = function(user) {
       if (result == null) {
         resolve(-1);
       } else if (result.password == password) {
-        resolve(result);
+        var data = {
+          userId : result._id.toString(),
+          startTime : user.startTime,
+          isStart : true
+        };
+        exports.updateSession(data).then(function(sessionId){
+          result.sessionId = sessionId;
+          result.startTime = user.startTime;
+          resolve(result);
+        });
       } else {
         resolve(-2);
       }
@@ -264,23 +274,37 @@ exports.updateUser = function(data) {
 
 //Update user sessions
 exports.updateSession = function(data) {
-  var query = {
-    _id: mongoose.Types.ObjectId(data.userId)
-  };
-  var newData = {
-    $push: {
-      sessions: { start : data.startTime, end: data.endTime }
-    }
-  };
-  return new Promise(function(resolve, reject) {
-    User.findOneAndUpdate(query, newData, {
-      upsert: false
-    }, function(err, newAnswer) {
-      if (err) reject(err);
-      resolve(newAnswer._id.toString());
+  //If the session is new create session
+  if (data.isStart == true) {
+    return new Promise(function(resolve, reject) {
+      var newSession = new Session({
+        userId: data.userId,
+        startTime : data.startTime
+      });
+      newSession.save(function(err, newSession) {
+        if (err) reject(err);
+        resolve(newSession._id.toString());
+      });
     });
-  });
+    //Else update endTime
+  } else {
+    var query = {
+      _id: mongoose.Types.ObjectId(data.sessionId)
+    };
+    var newData = {
+      endTime: data.endTime
+    };
+    return new Promise(function(resolve, reject) {
+      Session.findOneAndUpdate(query, newData, {
+        upsert: false
+      }, function(err, newAnswer) {
+        if (err) reject(err);
+        resolve(newAnswer._id.toString());
+      });
+    });
+  }
 };
+
 
 
 

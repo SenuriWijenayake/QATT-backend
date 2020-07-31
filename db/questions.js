@@ -11,82 +11,42 @@ module.exports = [
   },
   {
     "questionNumber": "3",
-    "text": "Should online degrees be valued equally to traditional degrees?",
-    "type": "Education"
-  },
-  {
-    "questionNumber": "4",
-    "text": "Should all religions be banned on a global scale?",
-    "type": "Religion"
-  },
-  {
-    "questionNumber": "5",
     "text": "Do we need religion for morality?",
     "type": "Religion"
   },
   {
-    "questionNumber": "6",
+    "questionNumber": "4",
     "text": "Has religion been a good thing for humanity?",
     "type": "Religion"
   },
   {
-    "questionNumber": "7",
-    "text": "Gender neutral bathrooms: Should they be standard?",
-    "type": "Gender"
-  },
-  {
-    "questionNumber": "8",
-    "text": "Should children learn about gender identity and sexual orientation at school?",
-    "type": "Gender"
-  },
-  {
-    "questionNumber": "9",
-    "text": "Should quotas for women on boards and in managerial positions be mandatory?",
-    "type": "Gender"
-  },
-  {
-    "questionNumber": "10",
+    "questionNumber": "5",
     "text": "Should voting be mandatory?",
     "type": "Society"
   },
   {
-    "questionNumber": "11",
+    "questionNumber": "6",
     "text": "Should the death penalty be abolished worldwide?",
     "type": "Society"
   },
   {
-    "questionNumber": "12",
-    "text": "Should abortion be legal?",
-    "type": "Society"
-  },
-  {
-    "questionNumber": "13",
+    "questionNumber": "7",
     "text": "Has social media been good for humanity?",
     "type": "Social Media"
   },
   {
-    "questionNumber": "14",
+    "questionNumber": "8",
     "text": "Is space exploration a waste of money?",
     "type": "Social Media"
   },
   {
-    "questionNumber": "15",
-    "text": "Do electronic devices help children’s development?",
-    "type": "Social Media"
-  },
-  {
-    "questionNumber": "16",
+    "questionNumber": "9",
     "text": "Should organ donation be mandatory?",
     "type": "Health"
   },
   {
-    "questionNumber": "17",
+    "questionNumber": "10",
     "text": "Should euthanasia be legalised?",
-    "type": "Health"
-  },
-  {
-    "questionNumber": "18",
-    "text": "Is it wrong to lockdown for COVID-19?",
     "type": "Health"
   }
 ];
