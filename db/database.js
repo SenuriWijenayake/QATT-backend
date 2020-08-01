@@ -1,7 +1,7 @@
 //Import the mongoose module
 var mongoose = require('mongoose');
 // var mongoDB = 'mongodb://admin:admin1234@ds135680.mlab.com:35680/qa';
-var mongoDB = 'mongodb://localhost:27017/study5';
+var mongoDB = 'mongodb://localhost:27017/study8';
 
 mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
@@ -316,6 +316,9 @@ exports.getGroupUsers = function(data) {
     structure: data.structure,
     _id: {
       $ne: mongoose.Types.ObjectId(thisUser)
+    },
+    email: {
+      $ne: "admin@gmail.com"
     }
   };
   return new Promise(function(resolve, reject) {
@@ -329,7 +332,10 @@ exports.getGroupUsers = function(data) {
 exports.getAllGroupUsers = function(data) {
   var query = {
     socialPresence: data.socialPresence,
-    structure: data.structure
+    structure: data.structure,
+    email: {
+      $ne: "admin@gmail.com"
+    }
   };
   return new Promise(function(resolve, reject) {
     User.find(query, 'name profilePicture', function(err, result) {
