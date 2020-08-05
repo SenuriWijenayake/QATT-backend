@@ -199,9 +199,14 @@ exports.saveUserData = function(user) {
             "name": user.name,
             "email": user.email,
             "gender": user.gender,
+            "genderSpecified" : user.genderSpecified,
             "structure": user.structure,
             "socialPresence": user.socialPresence,
-            "order": user.order
+            "order": user.order,
+            "firstVisit" : user.firstVisit,
+            "completedComments" : user.completedComments,
+            "completedVotes" : user.completedVotes,
+            "completedUES" : user.completedUES
           };
           if (user.profilePicture) {
             obj.profilePicture = user.profilePicture

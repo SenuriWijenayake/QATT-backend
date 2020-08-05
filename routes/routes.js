@@ -20,7 +20,7 @@ var appRouter = function(app) {
   app.post('/updateUserSession', function(req, res) {
     return new Promise(function(resolve, reject) {
       logic.updateSession(req.body).then(function(user) {
-        resolve(res.status(200).send());
+        resolve(res.status(200).send(user));
       });
     });
   });
