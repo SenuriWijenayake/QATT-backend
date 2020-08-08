@@ -4,7 +4,7 @@ var Schema = mongoose.Schema;
 // create a schema
 var commentSchema = new Schema({
   userId : String,
-  userPicture : String,
+  userPicture : { type : String , required: false },
   userName : String,
   questionId : String,
   socialPresence : Boolean,

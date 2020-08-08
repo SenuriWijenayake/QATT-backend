@@ -625,7 +625,7 @@ exports.updateAnswer = function(answer) {
         var vote = {
           userId: answer.userId,
           userName: answer.userName,
-          userPicture: user.profilePicture,
+          // userPicture: user.profilePicture,
           questionId: answer.questionId,
           socialPresence: answer.socialPresence,
           structure: answer.structure,
@@ -651,41 +651,42 @@ exports.getUserById = function(userId) {
 //Function to get all votes per question
 exports.getVotesForQuestion = function(query) {
   return new Promise(function(resolve, reject) {
-    db.getVotesForQuestion(query).then(function(votes) {
+    exports.getAllProfilePictures().then(function(profiles){
+      db.getVotesForQuestion(query).then(function(votes) {
+        db.getAllGroupUsers(query).then(function(users) {
+          var finalVotes = [];
+          var votedUsers = [];
 
-      db.getAllGroupUsers(query).then(function(users) {
-        var finalVotes = [];
-        var votedUsers = [];
-
-        //For those who have voted
-        for (var i = 0; i < votes.length; i++) {
-          var obj = {
-            userName: votes[i].userName,
-            userPicture: votes[i].userPicture,
-            vote: votes[i].vote
-          }
-          votedUsers.push(votes[i].userId);
-          finalVotes.push(obj);
-        }
-
-        //For those who have not voted
-        for (var j = 0; j < users.length; j++) {
-          if (!votedUsers.includes(users[j].userId)) {
+          //For those who have voted
+          for (var i = 0; i < votes.length; i++) {
             var obj = {
-              userName: users[j].name,
-              userPicture: users[j].profilePicture,
-              vote: 'not-attempted'
+              userName: votes[i].userName,
+              userPicture: profiles[votes[i].userId],
+              vote: votes[i].vote
             }
+            votedUsers.push(votes[i].userId);
             finalVotes.push(obj);
           }
-        }
 
-        //Preparing the final response
-        var final = {
-          questionText: query.questionText,
-          votes: finalVotes
-        };
-        resolve(final);
+          //For those who have not voted
+          for (var j = 0; j < users.length; j++) {
+            if (!votedUsers.includes(users[j].userId)) {
+              var obj = {
+                userName: users[j].name,
+                userPicture: users[j].profilePicture,
+                vote: 'not-attempted'
+              }
+              finalVotes.push(obj);
+            }
+          }
+
+          //Preparing the final response
+          var final = {
+            questionText: query.questionText,
+            votes: finalVotes
+          };
+          resolve(final);
+        });
       });
     });
   });

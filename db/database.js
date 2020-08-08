@@ -560,7 +560,7 @@ exports.saveVote = function(answer) {
     var newVote = new Vote({
       userId: answer.userId,
       userName: answer.userName,
-      userPicture: answer.userPicture,
+      // userPicture: answer.userPicture,
       questionId: answer.questionId,
       socialPresence: answer.socialPresence,
       structure: answer.structure,
@@ -579,7 +579,7 @@ exports.saveComment = function(comment) {
   return new Promise(function(resolve, reject) {
     var newComment = new Comment({
       userId: comment.userId,
-      userPicture: comment.userPicture,
+      // userPicture: comment.userPicture,
       userName: comment.userName,
       questionId: comment.questionId,
       socialPresence: comment.socialPresence,
