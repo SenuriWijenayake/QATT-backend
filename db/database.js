@@ -1,6 +1,7 @@
 //Import the mongoose module
 var mongoose = require('mongoose');
-var mongoDB = 'mongodb://admin:admin1234@ds127843.mlab.com:27843/qaft';
+// var mongoDB = 'mongodb://admin:admin1234@ds127843.mlab.com:27843/qaft';
+var mongoDB = 'mongodb://localhost:27017/study6';
 
 mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
