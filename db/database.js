@@ -655,7 +655,14 @@ exports.getUESQuestions = function() {
   return (UESQuestions);
 };
 
-//Function to return daily stats of users
+//Function to get all profile pictures
+exports.getAllProfilePictures = function() {
+  return new Promise(function(resolve, reject) {
+    User.find({}, 'email profilePicture', function(err, res) {
+      resolve(res);
+    });
+  });
+};
 
 
 //Bind connection to error event (to get notification of connection errors)

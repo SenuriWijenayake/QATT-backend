@@ -344,10 +344,10 @@ exports.saveComment = function(comment) {
     //Check comment order
     db.getAllComments(data).then(function(allComments) {
       //Get user picture
-      db.getUserById(comment.userId).then(function(user) {
+      // db.getUserById(comment.userId).then(function(user) {
         var comm = {};
         comm.userId = comment.userId;
-        comm.userPicture = user.profilePicture;
+        // comm.userPicture = user.profilePicture;
         comm.userName = comment.userName;
         comm.questionId = comment.questionId;
         comm.socialPresence = comment.socialPresence;
@@ -377,11 +377,13 @@ exports.saveComment = function(comment) {
               resolve(final);
             })
           } else {
-            final.comments = exports.formatAllComments(allFinalComments);
-            resolve(final);
+            exports.formatAllComments(allFinalComments).then(function(res){
+              final.comments = res;
+              resolve(final);
+            });
           }
         });
-      });
+      // });
     });
   });
 };
@@ -406,26 +408,32 @@ exports.structureAllComments = function(allFinalComments, query) {
       noComments.push(allFinalComments[i]);
     }
   }
-
-  final.yes = exports.formatAllComments(yesComments);
-  final.no = exports.formatAllComments(noComments);
+  // final.yes = exports.formatAllComments(yesComments);
+  // final.no = exports.formatAllComments(noComments);
 
   return new Promise(function(resolve, reject) {
-    db.getInitialAnswersForQuestion(query).then(function(counts) {
-      var yesCount = 0;
-      var noCount = 0;
 
-      for (var j = 0; j < counts.length; j++) {
-        if (counts[j]._id == "yes") {
-          yesCount = counts[j].count;
-        } else {
-          noCount = counts[j].count;
-        }
-      }
-      final.progressY = Math.round(yesCount / (yesCount + noCount) * 100);
-      final.progressN = Math.round(noCount / (yesCount + noCount) * 100);
+    exports.formatAllComments(yesComments).then(function(res){
+      final.yes = res;
+      exports.formatAllComments(noComments).then(function(noRes){
+        final.no = noRes;
+        db.getInitialAnswersForQuestion(query).then(function(counts) {
+          var yesCount = 0;
+          var noCount = 0;
 
-      resolve (final);
+          for (var j = 0; j < counts.length; j++) {
+            if (counts[j]._id == "yes") {
+              yesCount = counts[j].count;
+            } else {
+              noCount = counts[j].count;
+            }
+          }
+          final.progressY = Math.round(yesCount / (yesCount + noCount) * 100);
+          final.progressN = Math.round(noCount / (yesCount + noCount) * 100);
+
+          resolve (final);
+        });
+      });
     });
   });
 };
@@ -445,80 +453,85 @@ exports.formatAllComments = function(allFinalComments) {
     }
   }
 
-  for (var j = 0; j < all_comms.length; j++) {
-    var c = {
-      id: all_comms[j]._id.toString(),
-      profilePicture: all_comms[j].userPicture,
-      userId: all_comms[j].userId,
-      username: all_comms[j].userName,
-      comment: all_comms[j].text,
-      order: all_comms[j].order,
-      timestamp: all_comms[j].timestamp,
-      upVotes: [],
-      downVotes: [],
-      replies: []
-    };
+  return new Promise(function(resolve, reject) {
+    exports.getAllProfilePictures().then(function(profiles){
 
-    // Processing the upvotes
-    if (all_comms[j].upVotes.length > 0) {
-      var upVotes = [];
-      for (var x = 0; x < all_comms[j].upVotes.length; x++) {
-        upVotes.push(all_comms[j].upVotes[x].userId);
-      }
-      c.upVotes = upVotes;
-    }
+      for (var j = 0; j < all_comms.length; j++) {
+        var c = {
+          id: all_comms[j]._id.toString(),
+          profilePicture: profiles[all_comms[j].userId],
+          userId: all_comms[j].userId,
+          username: all_comms[j].userName,
+          comment: all_comms[j].text,
+          order: all_comms[j].order,
+          timestamp: all_comms[j].timestamp,
+          upVotes: [],
+          downVotes: [],
+          replies: []
+        };
 
-    // Processing the downvotes
-    if (all_comms[j].downVotes.length > 0) {
-      var downVotes = [];
-      for (var y = 0; y < all_comms[j].downVotes.length; y++) {
-        downVotes.push(all_comms[j].downVotes[y].userId);
-      }
-      c.downVotes = downVotes;
-    }
-
-    //Processing Replies
-    if (all_comms[j].replies == true) {
-      for (var k = 0; k < all_replies.length; k++) {
-        if (all_replies[k].parentComment == c.id) {
-
-          var r = {
-            id: all_replies[k]._id.toString(),
-            profilePicture: all_replies[k].userPicture,
-            username: all_replies[k].userName,
-            userId: all_replies[k].userId,
-            comment: all_replies[k].text,
-            order: all_replies[k].order,
-            timestamp: all_replies[k].timestamp,
-            upVotes: [],
-            downVotes: [],
-            replies: []
-          };
-
-          // Processing the upvotes of the reply
-          if (all_replies[k].upVotes.length > 0) {
-            var upVotes = [];
-            for (var x = 0; x < all_replies[k].upVotes.length; x++) {
-              upVotes.push(all_replies[k].upVotes[x].userId);
-            }
-            r.upVotes = upVotes;
+        // Processing the upvotes
+        if (all_comms[j].upVotes.length > 0) {
+          var upVotes = [];
+          for (var x = 0; x < all_comms[j].upVotes.length; x++) {
+            upVotes.push(all_comms[j].upVotes[x].userId);
           }
-
-          // Processing the downvotes of the reply
-          if (all_replies[k].downVotes.length > 0) {
-            var downVotes = [];
-            for (var y = 0; y < all_replies[k].downVotes.length; y++) {
-              downVotes.push(all_replies[k].downVotes[y].userId);
-            }
-            r.downVotes = downVotes;
-          }
-          c.replies.push(r);
+          c.upVotes = upVotes;
         }
+
+        // Processing the downvotes
+        if (all_comms[j].downVotes.length > 0) {
+          var downVotes = [];
+          for (var y = 0; y < all_comms[j].downVotes.length; y++) {
+            downVotes.push(all_comms[j].downVotes[y].userId);
+          }
+          c.downVotes = downVotes;
+        }
+
+        //Processing Replies
+        if (all_comms[j].replies == true) {
+          for (var k = 0; k < all_replies.length; k++) {
+            if (all_replies[k].parentComment == c.id) {
+
+              var r = {
+                id: all_replies[k]._id.toString(),
+                profilePicture: profiles[all_replies[k].userId],
+                username: all_replies[k].userName,
+                userId: all_replies[k].userId,
+                comment: all_replies[k].text,
+                order: all_replies[k].order,
+                timestamp: all_replies[k].timestamp,
+                upVotes: [],
+                downVotes: [],
+                replies: []
+              };
+
+              // Processing the upvotes of the reply
+              if (all_replies[k].upVotes.length > 0) {
+                var upVotes = [];
+                for (var x = 0; x < all_replies[k].upVotes.length; x++) {
+                  upVotes.push(all_replies[k].upVotes[x].userId);
+                }
+                r.upVotes = upVotes;
+              }
+
+              // Processing the downvotes of the reply
+              if (all_replies[k].downVotes.length > 0) {
+                var downVotes = [];
+                for (var y = 0; y < all_replies[k].downVotes.length; y++) {
+                  downVotes.push(all_replies[k].downVotes[y].userId);
+                }
+                r.downVotes = downVotes;
+              }
+              c.replies.push(r);
+            }
+          }
+        }
+        final.push(c);
       }
-    }
-    final.push(c);
-  }
-  return (final);
+      resolve (final);
+    });
+  });
 };
 
 //Function to update the upvote/downvote count
@@ -556,8 +569,10 @@ exports.updateVoteForComment = function(data) {
             resolve(final);
           });
         } else {
-          final.comments = exports.formatAllComments(comments);
-          resolve(final);
+          exports.formatAllComments(comments).then(function(res){
+            final.comments = res;
+            resolve(final);
+          });
         }
       });
     });
@@ -586,8 +601,10 @@ exports.getCommentsForQuestion = function(data) {
           resolve(final);
         });
       } else {
-        final.comments = exports.formatAllComments(comments);
-        resolve(final);
+        exports.formatAllComments(comments).then(function(res){
+          final.comments = res;
+          resolve(final);
+        });
       }
     });
   });
@@ -680,6 +697,19 @@ exports.updateSession = function(data){
   return new Promise(function(resolve, reject) {
     db.updateSession(data).then(function(user) {
       resolve(user);
+    });
+  });
+};
+
+//Function to get all profile pictures`
+exports.getAllProfilePictures = function(data){
+  return new Promise(function(resolve, reject) {
+    db.getAllProfilePictures().then(function(profiles) {
+      var final = {};
+      for (var i = 0; i < profiles.length; i++) {
+        final[profiles[i]._id.toString()] = profiles[i].profilePicture;
+      }
+      resolve(final);
     });
   });
 };
