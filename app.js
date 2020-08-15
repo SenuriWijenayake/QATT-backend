@@ -13,31 +13,52 @@ app.use(function(req, res, next) {
 });
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 routes(app);
 
 server.listen(process.env.PORT || 5000);
 
-// const io = require("socket.io")(server);
-// var users = [];
-//
-// io.on('connection', (socket) => {
-//
-//   socket.on('new_connection', (data) => {
-//     console.log(data);
-//     console.log("Connected new user : " + data.userId);
-//     if (!users.includes(data.userId)){
-//       users.push(data.userId);
-//     }
-//     console.log(users);
-//   });
-//
-//   socket.on('removeSocket', (data) => {
-//     console.log("Disconnected user : " + data.userId);
-//     var index = users.indexOf(data.userId);
-//     if (index > -1) {
-//       users.splice(index, 1);
-//     }
-//     console.log(users);
-//   });
-// });
+const io = require("socket.io")(server);
+var users = [];
+var profiles = [];
+
+io.on('connection', (socket) => {
+  socket.on('new_connection', (data) => {
+
+    console.log("Connected new user : " + data.userId);
+    console.log("Users connected : " + users.length);
+
+    if (!users.includes(data.userId)) {
+      users.push(data.userId);
+      profiles.push(data);
+    }
+
+    io.sockets.emit('new_connection', {
+      'online' : profiles
+    });
+  });
+
+  socket.on('removeSocket', (data) => {
+    console.log("Disconnected user : " + data.userId);
+
+    var index = users.indexOf(data.userId);
+    if (index > -1) {
+      users.splice(index, 1);
+    }
+    newProfiles = []
+    for (var i = 0; i < profiles.length; i++) {
+      if (profiles[i].userId != data.userId){
+        newProfiles.push(profiles[i])
+      }
+    }
+    profiles = newProfiles;
+
+    console.log("Users connected : " + users.length);
+    io.sockets.emit('new_connection', {
+      'online' : profiles
+    });
+
+  });
+});
