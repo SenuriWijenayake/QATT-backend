@@ -28,16 +28,14 @@ io.on('connection', (socket) => {
   socket.on('new_connection', (data) => {
 
     console.log("Connected new user : " + data.userId);
-    console.log("Users connected : " + users.length);
-
     if (!users.includes(data.userId)) {
       users.push(data.userId);
       profiles.push(data);
     }
-
     io.sockets.emit('new_connection', {
       'online' : profiles
     });
+    console.log("Users connected : " + users.length);
   });
 
   socket.on('removeSocket', (data) => {
