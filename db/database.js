@@ -16,6 +16,7 @@ var BigFiveRaw = require('./schemas/bigFiveRaw');
 var UESRaw = require('./schemas/UESRaw');
 var Comment = require('./schemas/comment');
 var Vote = require('./schemas/vote');
+var Event = require('./schemas/event');
 var Notification = require('./schemas/notification');
 var Session = require('./schemas/session');
 var bigFiveQuestions = require('./bigFiveQuestions');
@@ -394,6 +395,7 @@ exports.updateVoteForComment = function(data) {
   });
 
   var newData = {};
+  var content, type;
 
   if (data.isUpvote & !data.removeVote) {
     newData = {
@@ -404,6 +406,10 @@ exports.updateVoteForComment = function(data) {
         'totalVotes': 1
       }
     }
+
+    type = "upvote";
+    content = data.userName + " upvoted a comment on '" + data.questionText + "'.";
+
   } else if (!data.isUpvote & !data.removeVote) {
     newData = {
       $push: {
@@ -413,6 +419,10 @@ exports.updateVoteForComment = function(data) {
         'totalVotes': -1
       }
     }
+
+    type = "downvote";
+    content = data.userName + " downvoted a comment on '" + data.questionText + "'.";
+
   } else if (data.isUpvote & data.removeVote) {
     newData = {
       $pull: {
@@ -442,6 +452,10 @@ exports.updateVoteForComment = function(data) {
       upsert: true
     }, function(err, newAnswer) {
       if (err) reject(err);
+
+      //Save notification
+      exports.saveNotification(data.userId, type, content, data.timestamp);
+
       resolve(newAnswer._id.toString());
     });
   });
@@ -569,6 +583,11 @@ exports.saveVote = function(answer) {
 
     newVote.save(function(err, newVote) {
       if (err) reject(err);
+
+      //Save notification
+      var content = answer.userName + " added their final vote on '" + answer.questionText + "'.";
+      exports.saveNotification(answer.userId, "vote", content, answer.timestamp);
+
       resolve(newVote._id.toString());
     });
   });

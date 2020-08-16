@@ -544,7 +544,10 @@ exports.updateVoteForComment = function(data) {
     isUpvote: data.vote,
     removeVote: data.removeVote,
     commentId: data.commentId,
-    userId: data.userId
+    userId: data.userId,
+    questionText: data.questionText,
+    timestamp: data.timestamp,
+    userName: data.userName
   };
   var next = {
     socialPresence: data.socialPresence,
@@ -633,7 +636,9 @@ exports.updateAnswer = function(answer) {
           questionId: answer.questionId,
           socialPresence: answer.socialPresence,
           structure: answer.structure,
-          vote: answer.newAnswer
+          vote: answer.newAnswer,
+          questionText: answer.questionText,
+          timestamp: answer.timestamp
         };
         db.saveVote(vote).then(function(result) {
           resolve(result);
