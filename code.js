@@ -324,7 +324,9 @@ exports.saveAnswer = function(answer) {
         structure: answer.structure,
         userName: answer.userName,
         isReply: answer.isReply,
-        isAgree: type
+        isAgree: type,
+        questionText: answer.questionText,
+        timestamp : answer.timestamp
       };
       exports.saveComment(comment).then(function(result) {
         resolve(result);
@@ -357,6 +359,8 @@ exports.saveComment = function(comment) {
         comm.isReply = comment.isReply;
         comm.parentComment = comment.parentComment;
         comm.isAgree = comment.isAgree;
+        comm.questionText = comment.questionText;
+        comm.timestamp = comment.timestamp;
 
         db.saveComment(comm).then(function(allFinalComments) {
           var final = {

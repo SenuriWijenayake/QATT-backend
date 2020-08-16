@@ -16,7 +16,7 @@ var BigFiveRaw = require('./schemas/bigFiveRaw');
 var UESRaw = require('./schemas/UESRaw');
 var Comment = require('./schemas/comment');
 var Vote = require('./schemas/vote');
-var Event = require('./schemas/events');
+var Notification = require('./schemas/notification');
 var Session = require('./schemas/session');
 var bigFiveQuestions = require('./bigFiveQuestions');
 var UESQuestions = require('./UESQuestions');
@@ -577,6 +577,7 @@ exports.saveVote = function(answer) {
 //Function to save a comment
 exports.saveComment = function(comment) {
   return new Promise(function(resolve, reject) {
+
     var newComment = new Comment({
       userId: comment.userId,
       // userPicture: comment.userPicture,
@@ -595,6 +596,11 @@ exports.saveComment = function(comment) {
       if (err) reject(err);
       //If a reply, update parent
       if (comment.isReply == true) {
+        //Adding a notification
+        var content = comment.userName + " replied to a comment on '" + comment.questionText + "'.";
+        exports.saveNotification(comment.userId, "reply", content, comment.timestamp);
+
+        //Update parent
         var parentComment = comment.parentComment;
         exports.updateParentCommentById(parentComment).then(function() {
           var data = {};
@@ -607,6 +613,11 @@ exports.saveComment = function(comment) {
           });
         });
       } else {
+
+        //Adding a notification
+        var content = comment.userName + " added a new comment on '" + comment.questionText + "'.";
+        exports.saveNotification(comment.userId, "comment", content, comment.timestamp);
+
         var data = {};
         data.socialPresence = newComment.socialPresence;
         data.structure = newComment.structure;
@@ -661,6 +672,21 @@ exports.getAllProfilePictures = function() {
     User.find({}, 'email profilePicture', function(err, res) {
       resolve(res);
     });
+  });
+};
+
+//Function to create a notification
+exports.saveNotification = function(userId, type, content, timestamp) {
+  var notification = new Notification({
+    userId: userId,
+    type: type,
+    content: content,
+    timestamp : timestamp
+  });
+
+  notification.save(function(err) {
+    if (err) throw err;
+    console.log('Notification saved successfully!');
   });
 };
 
