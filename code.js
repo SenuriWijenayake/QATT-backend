@@ -247,6 +247,26 @@ exports.getAnswersByUser = function(data) {
   });
 };
 
+//Function to get all notifications
+exports.getNotifications = function(data) {
+  return new Promise(function(resolve, reject) {
+    var since;
+    if (data.since == null){
+      //Get the last session end
+      db.getLastSessionByUserId(data).then(function (time){
+        data.since = time;
+        db.getNotifications(data).then(function(arr) {
+          resolve(arr);
+        });
+      })
+    } else {
+      db.getNotifications(data).then(function(arr) {
+        resolve(arr);
+      });
+    }
+  });
+};
+
 
 //Function to login user
 exports.updateUser = function(data) {

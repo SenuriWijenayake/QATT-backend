@@ -148,6 +148,24 @@ exports.getAnswersByUser = function(userId) {
   });
 };
 
+//Function to get all notifications
+exports.getNotifications = function(data) {
+  var query = {
+    userId : {
+      $ne : data.userId
+    },
+    timestamp : {
+      $gt : data.since
+    }
+  };
+  return new Promise(function(resolve, reject) {
+    Notification.find(query, function(err, res) {
+      // console.log(res);
+      resolve(res);
+    });
+  });
+};
+
 
 //Function to get all questions voted by a user
 exports.getVotesByUser = function(userId) {
@@ -217,11 +235,11 @@ exports.loginUser = function(user) {
         resolve(-1);
       } else if (result.password == password) {
         var data = {
-          userId : result._id.toString(),
-          startTime : user.startTime,
-          isStart : true
+          userId: result._id.toString(),
+          startTime: user.startTime,
+          isStart: true
         };
-        exports.updateSession(data).then(function(sessionId){
+        exports.updateSession(data).then(function(sessionId) {
           result.sessionId = sessionId;
           result.startTime = user.startTime;
           resolve(result);
@@ -280,7 +298,7 @@ exports.updateSession = function(data) {
     return new Promise(function(resolve, reject) {
       var newSession = new Session({
         userId: data.userId,
-        startTime : data.startTime
+        startTime: data.startTime
       });
       newSession.save(function(err, newSession) {
         if (err) reject(err);
@@ -306,6 +324,24 @@ exports.updateSession = function(data) {
   }
 };
 
+
+//Function to find the last session of a user
+exports.getLastSessionByUserId = function(data) {
+  var query = {
+    userId : data.userId,
+    _id: { $ne : mongoose.Types.ObjectId(data.sessionId)}
+  };
+  return new Promise(function(resolve, reject) {
+    Session.findOne(query, null, {sort: {'_id': -1}}, function(err, session) {
+      if (session != null){
+        var time = session['endTime'] != null ? session['endTime'] : session['startTime']
+      } else {
+        var time = Date.now().getTime();
+      }
+      resolve(time);
+    });
+  });
+};
 
 
 
@@ -700,7 +736,7 @@ exports.saveNotification = function(userId, type, content, timestamp) {
     userId: userId,
     type: type,
     content: content,
-    timestamp : timestamp
+    timestamp: timestamp
   });
 
   notification.save(function(err) {

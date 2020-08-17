@@ -16,6 +16,17 @@ var appRouter = function(app) {
     res.status(200).send(result);
   });
 
+  //Endpoint to request notifications at login
+  app.post('/notifications', function(req, res) {
+    console.log("At /notifications : User - " + req.body.userId + " since : " + req.body.since);
+    return new Promise(function(resolve, reject) {
+      logic.getNotifications(req.body).then(function(notifications) {
+        console.log(notifications.length);
+        resolve(res.status(200).send(notifications));
+      });
+    });
+  });
+
   //Endpoint to update user session
   app.post('/updateUserSession', function(req, res) {
     var x = (req.body.isStart) ? req.body.userId : req.body.sessionId;
