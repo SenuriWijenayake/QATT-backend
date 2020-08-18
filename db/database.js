@@ -151,16 +151,15 @@ exports.getAnswersByUser = function(userId) {
 //Function to get all notifications
 exports.getNotifications = function(data) {
   var query = {
-    userId : {
-      $ne : data.userId
+    userId: {
+      $ne: data.userId
     },
-    timestamp : {
-      $gt : data.since
+    timestamp: {
+      $gt: data.since
     }
   };
   return new Promise(function(resolve, reject) {
     Notification.find(query, function(err, res) {
-      // console.log(res);
       resolve(res);
     });
   });
@@ -328,12 +327,18 @@ exports.updateSession = function(data) {
 //Function to find the last session of a user
 exports.getLastSessionByUserId = function(data) {
   var query = {
-    userId : data.userId,
-    _id: { $ne : mongoose.Types.ObjectId(data.sessionId)}
+    userId: data.userId,
+    _id: {
+      $ne: mongoose.Types.ObjectId(data.sessionId)
+    }
   };
   return new Promise(function(resolve, reject) {
-    Session.findOne(query, null, {sort: {'_id': -1}}, function(err, session) {
-      if (session != null){
+    Session.findOne(query, null, {
+      sort: {
+        '_id': -1
+      }
+    }, function(err, session) {
+      if (session != null) {
         var time = session['endTime'] != null ? session['endTime'] : session['startTime']
       } else {
         var time = Date.now().getTime();
