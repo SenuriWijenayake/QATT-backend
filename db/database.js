@@ -1,7 +1,6 @@
 //Import the mongoose module
 var mongoose = require('mongoose');
-// var mongoDB = 'mongodb://admin:admin1234@ds127843.mlab.com:27843/qaft';
-var mongoDB = 'mongodb://localhost:27017/study6';
+var mongoDB = 'mongodb://admin:admin1234@ds249787.mlab.com:49787/qatf';
 
 mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
@@ -160,7 +159,18 @@ exports.getNotifications = function(data) {
   };
   return new Promise(function(resolve, reject) {
     Notification.find(query, function(err, res) {
-      resolve(res);
+      var final = [];
+      for (var i = 0; i < res.length; i++) {
+        var obj = {
+          id: res[i]._id.toString(),
+          userId : res[i].userId,
+          timestamp : res[i].timestamp,
+          content : res[i].content,
+          type : res[i].type
+        }
+        final.push(obj);
+      }
+      resolve(final);
     });
   });
 };
@@ -341,8 +351,9 @@ exports.getLastSessionByUserId = function(data) {
       if (session != null) {
         var time = session['endTime'] != null ? session['endTime'] : session['startTime']
       } else {
-        var time = Date.now().getTime();
+        var time = Date.now();
       }
+      console.log(time);
       resolve(time);
     });
   });
