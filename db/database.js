@@ -1,7 +1,8 @@
 //Import the mongoose module
 var mongoose = require('mongoose');
-// var mongoDB = 'mongodb://admin:admin1234@ds249787.mlab.com:49787/qatf';
-var mongoDB = 'mongodb://localhost:27017/study5';
+var mongoDB = 'mongodb://admin:admin1234@ds041144.mlab.com:41144/qatt';
+
+// var mongoDB = 'mongodb://localhost:27017/study5';
 
 mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
@@ -507,7 +508,9 @@ exports.updateVoteForComment = function(data) {
       if (err) reject(err);
 
       //Save notification
-      exports.saveNotification(data.userId, type, content, data.timestamp);
+      if (!data.removeVote){
+        exports.saveNotification(data.userId, type, content, data.timestamp);
+      }
 
       resolve(newAnswer._id.toString());
     });
